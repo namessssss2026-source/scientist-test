@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科学人格测试 | 寻找你的灵魂科学家</title>
+    <!-- 引入 Chart.js 用于绘制二维坐标系 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 整体科技风蓝灰背景与基础字体 */
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background-color: #f0f4f8; color: #2c3e50; margin: 0; padding: 15px; }
+        .container { max-width: 750px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(44, 62, 80, 0.1); border: 1px solid #e1e8ed; }
+        h1 { text-align: center; color: #1a365d; font-size: 24px; margin-bottom: 10px; letter-spacing: 1px; }
+        .subtitle { text-align: center; color: #718096; font-size: 14px; margin-bottom: 30px; }
+        
+        /* 科技风渐变按钮 */
+        .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; text-align: center; color: white; box-sizing: border-box; letter-spacing: 2px; }
+        .btn-blue { background: linear-gradient(135deg, #4299e1, #3182ce); box-shadow: 0 4px 15px rgba(66, 153, 225, 0.4); }
+        .btn-blue:hover { background: linear-gradient(135deg, #3182ce, #2b6cb0); transform: translateY(-2px); }
+        .btn-submit { background: linear-gradient(135deg, #2b6cb0, #1a365d); margin-top: 30px; }
+        .btn-submit:hover { background: linear-gradient(135deg, #1a365d, #2b6cb0); }
+
+        /* 欢迎界面 */
+        #intro-screen { text-align: center; padding: 20px 10px; }
+        .icon-logo { font-size: 60px; margin-bottom: 15px; }
+        .intro-box { background: #ebf8ff; border: 1px dashed #90cdf4; padding: 15px; border-radius: 8px; font-size: 14px; color: #2b6cb0; line-height: 1.6; margin-bottom: 30px; text-align: left; }
+
+        /* 测试题界面 */
+        #quiz-screen { display: none; }
+        .question-card { margin-top: 25px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f7fafc; transition: 0.3s; }
+        .question-card:hover { border-color: #cbd5e0; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .q-title { font-weight: bold; margin-top: 0; color: #2d3748; font-size: 16px; }
+        .options label { display: block; padding: 14px; margin: 10px 0; border: 2px solid #edf2f7; border-radius: 8px; cursor: pointer; transition: 0.2s; background: white; color: #4a5568; font-size: 15px; }
+        .options label:hover { background: #ebf8ff; border-color: #63b3ed; color: #2b6cb0; }
+        input[type="radio"] { margin-right: 12px; accent-color: #4299e1; transform: scale(1.2); }
+
+        /* 加载界面 */
+        #loading-screen { display: none; text-align: center; padding: 60px 20px; }
+        .atom-spinner { width: 60px; height: 60px; border: 4px solid #e2e8f0; border-top: 4px solid #3182ce; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .progress-bar { width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; margin-top: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #63b3ed, #3182ce); transition: width 0.3s ease; }
+        #loading-text { font-size: 16px; color: #2b6cb0; font-weight: bold; margin-top: 20px; }
+
+        /* 结果界面 */
+        #result-screen { display: none; padding-top: 10px; }
+        .result-header { text-align: center; margin-bottom: 30px; }
+        .match-box { background: linear-gradient(135deg, #1a365d, #2b6cb0); color: white; padding: 30px 20px; border-radius: 16px; margin-bottom: 25px; text-align: center; box-shadow: 0 8px 20px rgba(26, 54, 93, 0.3); }
+        .match-title { font-size: 16px; color: #90cdf4; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .match-name { font-size: 42px; font-weight: bold; margin: 0 0 10px 0; letter-spacing: 2px; }
+        .match-tags { font-size: 15px; color: #ebf8ff; background: rgba(255,255,255,0.1); display: inline-block; padding: 6px 15px; border-radius: 20px; margin-bottom: 15px;}
+        .match-desc { font-size: 15px; line-height: 1.8; text-align: left; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); }
+        
+        /* 图表区 */
+        .chart-wrapper { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .chart-title { text-align: center; font-size: 16px; font-weight: bold; color: #4a5568; margin-bottom: 15px; }
+        canvas { max-width: 100%; }
+
+        /* 底部信息 */
+        .footer { text-align: center; font-size: 12px; color: #a0aec0; margin-top: 30px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔬 灵魂科学家维度测试</h1>
+    <div class="subtitle">AI 象限解析引擎 | 探索你的底层思考与行为代码</div>
+
+    <!-- 欢迎界面 -->
+    <div id="intro-screen">
+        <div class="icon-logo">🌌</div>
+        <div class="intro-box">
+            <strong>系统说明：</strong><br>
+            在这个平行的科学宇宙中，每个人都有属于自己的“科研人格坐标”。本测试将通过 10 道深度行为情境题，从<strong>【理论 vs 实践】</strong>与<strong>【独立 vs 协作】</strong>两个正交维度，测算你在二维坐标系中的位置，并为你匹配影射你灵魂深处的那位伟大科学家。
+        </div>
+        <button class="btn btn-blue" onclick="startQuiz()">启动神经元连接测试</button>
+    </div>
+
+    <!-- 测试界面 -->
+    <div id="quiz-screen">
+        <form id="quizForm">
+            <div id="questions-container"></div>
+            <button type="button" class="btn btn-submit" onclick="submitQuiz()">生成专属坐标与报告</button>
+        </form>
+    </div>
+
+    <!-- 加载界面 -->
+    <div id="loading-screen">
+        <div class="atom-spinner"></div>
+        <h2 style="color: #2b6cb0;">数据跃迁中...</h2>
+        <div id="loading-text">正在校准 X 轴 (理论与应用) 偏好...</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <!-- 结果界面 -->
+    <div id="result-screen">
+        <div class="result-header">
+            <h2 style="color:#2d3748;">📊 你的科研人格诊断报告</h2>
+        </div>
+        
+        <div class="match-box" id="matchBox">
+            <div class="match-title">你的灵魂科学家是</div>
+            <h1 class="match-name" id="scientistName">加载中</h1>
+            <div class="match-tags" id="scientistTags">加载中</div>
+            <div class="match-desc" id="scientistDesc">加载中...</div>
+        </div>
+
+        <div class="chart-wrapper">
+            <div class="chart-title">【思维与行为二维坐标矩阵图】</div>
+            <canvas id="scatterChart"></canvas>
+            <p style="font-size: 12px; color:#718096; text-align: center; margin-top:15px;">
+                * 你的位置由一颗发光的 ⭐️ 标记，寻找离你最近的伟人吧！
+            </p>
+        </div>
+        
+        <button class="btn btn-blue" onclick="location.reload()" style="margin-top: 20px;">重新测试</button>
+        
+        <div class="footer">
+            Powered by 科学人格解析实验室 | 部署于 GitHub Pages
+        </div>
+    </div>
+</div>
+
+<script>
+    // 定义科学家大数据库与坐标 (X: 实践倾向, Y: 社交协作倾向)
+    // X轴: 负数越小越偏向“纯理论”，正数越大越偏向“动手实验/应用”
+    // Y轴: 负数越小越偏向“独立/社恐”，正数越大越偏向“团队协作/社交”
+    const scientistsDb = [
+        { 
+            id: 'newton', name: '艾萨克·牛顿', x: -8, y: -9, 
+            tags: '#极致理论 #绝对独行 #天才疯子',
+            desc: '你在坐标系的第一象限边缘。你拥有极致的理论推演能力，喜欢在自己的绝对领域内深度沉浸。你不喜欢无效社交，甚至有些骄傲，但你的大脑能看穿宇宙运转的底层逻辑。你坚信“真理只掌握在少数人手中”。'
+        },
+        { 
+            id: 'einstein', name: '阿尔伯特·爱因斯坦', x: -7, y: 3, 
+            tags: '#思想实验 #随性漫游 #理想主义',
+            desc: '你是一个迷人的理论派。你不喜欢死磕枯燥的实验室仪器，而是喜欢在脑海中进行宏大的“思想实验”。与牛顿的孤僻不同，你具备人文情怀，愿意分享你的智慧。你有一颗自由、浪漫且不受世俗约束的灵魂。'
+        },
+        { 
+            id: 'tesla', name: '尼古拉·特斯拉', x: 8, y: -8, 
+            tags: '#硬核极客 #不善交际 #实践狂魔',
+            desc: '你是纯粹的实践派与发明家。你的动手能力极强，脑子里充满着天马行空的实物蓝图。你喜欢独自一人在实验室里敲敲打打，对人情世故毫不关心。你可能经常被世人误解，但你创造的东西却能改变整个世界。'
+        },
+        { 
+            id: 'edison', name: '托马斯·爱迪生', x: 9, y: 8, 
+            tags: '#应用大师 #团队领袖 #商业头脑',
+            desc: '你是科研圈里的“霸道总裁”。你坚信“不能转化为实际应用的发明毫无意义”。你不仅拥有强大的动手实验能力，更具备极高的情商和领导力。你擅长组建团队、分配资源，将想法迅速转化为能够改变人类生活的伟大产品。'
+        },
+        { 
+            id: 'feynman', name: '理查德·费曼', x: 2, y: 9, 
+            tags: '#跨界顽童 #极度外向 #幽默大师',
+            desc: '你是全场最靓的仔！你既懂高深理论，也能自己动手拆收音机。更重要的是，你极其外向、充满魅力。你喜欢把复杂的事情用最有趣的方式讲给别人听。对你来说，科学不是苦行僧式的修行，而是一场好玩的冒险游戏。'
+        },
+        { 
+            id: 'curie', name: '玛丽·居里', x: 6, y: -3, 
+            tags: '#实验死磕 #坚韧不拔 #沉静专注',
+            desc: '你代表着科学界最坚韧的力量。为了得到结果，你愿意在艰苦的条件下进行成千上万次的重复实验。你性格沉静、不慕虚荣，不需要外界的掌声也能保持极度的专注。你的力量源于你不可摧毁的内心底盘。'
+        }
+    ];
+
+    // 题目库 (每题影响 X 或 Y 轴得分，范围约为正负2分)
+    const questions = [
+        { 
+            axis: 'x', q: "1. 当你拿到一个完全陌生的复杂电子产品，你的第一反应是：", 
+            options: [
+                { text: "A. 仔细翻阅说明书，先搞懂底层工作原理再说。", score: -2 },
+                { text: "B. 管他的，先乱按一通，拆开看看里面是什么构造。", score: 2 }
+            ]
+        },
+        { 
+            axis: 'y', q: "2. 在解决一个极其困难的学术/工作难题时，你更倾向于：", 
+            options: [
+                { text: "A. 关掉手机，把自己锁在房间里独自死磕到底。", score: -2 },
+                { text: "B. 立刻召集几个聪明的朋友，大家一起头脑风暴。", score: 2 }
+            ]
+        },
+        { 
+            axis: 'x', q: "3. 评价一个绝妙的新想法时，你内心最看重的是：", 
+            options: [
+                { text: "A. 它的数学推导或逻辑体系是否完美、优雅、自洽。", score: -2 },
+                { text: "B. 它能不能马上落地变成产品，解决现实中的痛点。", score: 2 }
+            ]
+        },
+        { 
+            axis: 'y', q: "4. 你最理想的工作/学习环境是怎样的？", 
+            options: [
+                { text: "A. 绝对安静的私人空间，任何一点噪音都会打断我的心流。", score: -2 },
+                { text: "B. 充满活力的开放式空间，随时可以和旁边的人探讨进度。", score: 2 }
+            ]
+        },
+        { 
+            axis: 'x', q: "5. 如果让你看一部硬核科幻电影，让你觉得最爽的点会是：", 
+            options: [
+                { text: "A. 它构建了严密的物理法则和宏大深邃的世界观（如《星际穿越》的多维空间）。", score: -2 },
+                { text: "B. 里面出现了酷炫的机甲、飞船和随时能造出来的高科技装备（如《钢铁侠》）。", score: 2 }
+            ]
+        },
+        { 
+            axis: 'y', q: "6. 如果你偶然发现了一个足以震惊世界的小规律，你的第一反应：", 
+            options: [
+                { text: "A. 保持沉默，反复验算确认 100 遍，不完美绝不公开。", score: -2 },
+                { text: "B. 激动得跳起来，马上发朋友圈或者跑去告诉同事分享喜悦。", score: 2 }
+            ]
+        },
+        { 
+            axis: 'x', q: "7. 审视一下你的书桌或工作台，它通常呈现什么状态？", 
+            options: [
+                { text: "A. 只有几本书、纸和笔，甚至有些极简，所有的东西都在我脑子里。", score: -2 },
+                { text: "B. 堆满了各种小零件、工具、草图或半成品，乱中有序。", score: 2 }
+            ]
+        },
+        { 
+            axis: 'y', q: "8. 如果老板/导师任命你为一个核心大项目的负责人：", 
+            options: [
+                { text: "A. 觉得带团队太麻烦，最好核心任务全交给我一个人做。", score: -2 },
+                { text: "B. 兴奋地开始挑选神仙队友，准备发挥大家的综合优势。", score: 2 }
+            ]
+        },
+        { 
+            axis: 'x', q: "9. 纵观人类科学史，你内心深处更仰慕哪一种伟业？", 
+            options: [
+                { text: "A. 提出“相对论”或“微积分”这种大统一的抽象理论，洞穿宇宙本源。", score: -2 },
+                { text: "B. 发明交流电或智能手机，实实在在地改变几十亿人的生活方式。", score: 2 }
+            ]
+        },
+        { 
+            axis: 'y', q: "10. 参加行业峰会或大型学术交流会议时，你通常会：", 
+            options: [
+                { text: "A. 坐在后排听完感兴趣的报告，然后悄悄回酒店歇着。", score: -2 },
+                { text: "B. 在茶歇区如鱼得水，积极跟各位大佬交换名片、谈笑风生。", score: 2 }
+            ]
+        }
+    ];
+
+    function startQuiz() {
+        document.getElementById('intro-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'block';
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+        questions.forEach((item, index) => {
+            let html = `<div class="question-card">
+                            <p class="q-title">${item.q}</p>
+                            <div class="options">`;
+            item.options.forEach((opt, optIdx) => {
+                html += `<label><input type="radio" name="q${index}" value="${opt.score}" data-axis="${item.axis}"> ${opt.text}</label>`;
+            });
+            html += `</div></div>`;
+            container.innerHTML += html;
+        });
+    }
+
+    let userX = 0;
+    let userY = 0;
+
+    function submitQuiz() {
+        userX = 0;
+        userY = 0;
+        let answeredCount = 0;
+
+        for (let i = 0; i < questions.length; i++) {
+            const radios = document.getElementsByName('q' + i);
+            for (let radio of radios) {
+                if (radio.checked) {
+                    let score = parseInt(radio.value);
+                    let axis = radio.getAttribute('data-axis');
+                    if (axis === 'x') userX += score;
+                    if (axis === 'y') userY += score;
+                    answeredCount++;
+                    break;
+                }
+            }
+        }
+
+        if (answeredCount < questions.length) {
+            alert("请回答完所有 10 道维度测试题，以确保坐标计算的精准度哦！");
+            return;
+        }
+
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('loading-screen').style.display = 'block';
+        window.scrollTo(0, 0);
+        simulateLoading();
+    }
+
+    function simulateLoading() {
+        const fill = document.getElementById('progress-fill');
+        const text = document.getElementById('loading-text');
+        const stages = [
+            "正在映射 Y 轴 (独立与协作) 偏好...",
+            "正在构建个人二维坐标系...",
+            "正在计算高维欧几里得距离...",
+            "匹配历史伟人特征数据库...",
+            "生成最终科研人格报告..."
+        ];
+        
+        let progress = 0;
+        let stageIndex = 0;
+        
+        let interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 8) + 4; 
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                setTimeout(calculateAndShowResult, 500); 
+            }
+            fill.style.width = progress + '%';
+            
+            let expectedStage = Math.floor((progress / 100) * stages.length);
+            if(expectedStage >= stages.length) expectedStage = stages.length - 1;
+            if(expectedStage > stageIndex) {
+                stageIndex = expectedStage;
+                text.innerText = stages[stageIndex];
+            }
+        }, 150); 
+    }
+
+    function calculateAndShowResult() {
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+
+        // 核心算法：欧几里得距离计算最匹配的科学家
+        let minDistance = Infinity;
+        let matchedScientist = null;
+
+        scientistsDb.forEach(scientist => {
+            // d = √((x2 - x1)² + (y2 - y1)²)
+            let distance = Math.sqrt(Math.pow(scientist.x - userX, 2) + Math.pow(scientist.y - userY, 2));
+            if (distance < minDistance) {
+                minDistance = distance;
+                matchedScientist = scientist;
+            }
+        });
+
+        // 渲染文本结果
+        document.getElementById('scientistName').innerText = matchedScientist.name;
+        document.getElementById('scientistTags').innerText = matchedScientist.tags;
+        document.getElementById('scientistDesc').innerText = matchedScientist.desc;
+
+        // 绘制图表
+        drawScatterChart(userX, userY, matchedScientist.name);
+    }
+
+    let scatterChartObj = null;
+
+    // Chart.js 自定义插件：用于在散点图上直接显示名字标签
+    const dataLabelsPlugin = {
+        id: 'dataLabelsPlugin',
+        afterDatasetsDraw(chart) {
+            const ctx = chart.ctx;
+            chart.data.datasets.forEach((dataset, i) => {
+                const meta = chart.getDatasetMeta(i);
+                meta.data.forEach((element, index) => {
+                    // 获取当前点的数据
+                    const dataPoint = dataset.data[index];
+                    if(dataPoint.name) {
+                        ctx.fillStyle = dataset.pointBorderColor[index] || dataset.borderColor;
+                        ctx.font = dataPoint.isUser ? 'bold 14px "PingFang SC"' : '12px "PingFang SC"';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        // 用户坐标点稍微往上移一点防止重叠
+                        let yOffset = dataPoint.isUser ? 15 : 10;
+                        ctx.fillText(dataPoint.name, element.x, element.y - yOffset);
+                    }
+                });
+            });
+        }
+    };
+
+    // 注册插件
+    Chart.register(dataLabelsPlugin);
+
+    function drawScatterChart(uX, uY, matchName) {
+        const ctx = document.getElementById('scatterChart').getContext('2d');
+        if (scatterChartObj) scatterChartObj.destroy();
+
+        // 组装背景科学家数据
+        let backgroundData = scientistsDb.map(s => ({ x: s.x, y: s.y, name: s.name, isUser: false }));
+        
+        // 组装用户坐标数据
+        let userData = [{ x: uX, y: uY, name: '★ 你的位置', isUser: true }];
+
+        scatterChartObj = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: '科学巨匠',
+                        data: backgroundData,
+                        backgroundColor: '#cbd5e0',
+                        borderColor: '#718096',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    },
+                    {
+                        label: '你的坐标',
+                        data: userData,
+                        backgroundColor: '#ed8936', // 亮橙色突出用户
+                        borderColor: '#dd6b20',
+                        pointStyle: 'star',
+                        pointRadius: 12,
+                        pointHoverRadius: 15
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                aspectRatio: 1, // 保持正方形
+                scales: {
+                    x: {
+                        min: -12,
+                        max: 12,
+                        title: { display: true, text: '◀ 极致理论推演 (X轴) 极致动手实践 ▶', font: {weight: 'bold'} },
+                        grid: { color: (ctx) => ctx.tick.value === 0 ? '#4a5568' : '#edf2f7', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
+                    },
+                    y: {
+                        min: -12,
+                        max: 12,
+                        title: { display: true, text: '◀ 绝对独立研发 (Y轴) 擅长团队协作 ▶', font: {weight: 'bold'} },
+                        grid: { color: (ctx) => ctx.tick.value === 0 ? '#4a5568' : '#edf2f7', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.raw.name || '';
+                                return `${label} (X: ${context.parsed.x}, Y: ${context.parsed.y})`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
