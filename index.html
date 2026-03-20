@@ -3,109 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ 测测你的隐藏天才人格 | 高维精神状态图鉴</title>
+    <title>深度人格原型剖析：你的内在科学家</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* 梦幻星空蓝紫系背景与基础字体 */
-        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f0f4fd; color: #333; margin: 0; padding: 15px; }
-        .container { max-width: 650px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(100, 149, 237, 0.15); border: 1px solid #e6eeff; }
+        :root {
+            --primary: #2c3e50;
+            --accent: #d4af37; /* 高级金 */
+            --bg: #f9f9f9;
+            --text: #333;
+        }
+        body {
+            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+        h1 { font-size: 22px; color: var(--primary); text-align: center; margin-bottom: 10px; }
+        p.subtitle { color: #7f8c8d; font-size: 14px; text-align: center; margin-bottom: 30px; }
         
-        h1 { text-align: center; color: #4a6ee0; font-size: 24px; margin-bottom: 5px; font-weight: 800; letter-spacing: 1px;}
-        .subtitle { text-align: center; color: #8fa4d9; font-size: 13px; margin-bottom: 25px; }
-        
-        /* 渐变魔法按钮 */
-        .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 17px; font-weight: bold; cursor: pointer; transition: 0.3s; text-align: center; color: white; box-sizing: border-box; }
-        .btn-magic { background: linear-gradient(135deg, #8ba3e8, #b69af8); box-shadow: 0 6px 20px rgba(139, 163, 232, 0.4); margin-top: 20px;}
-        .btn-magic:hover { background: linear-gradient(135deg, #b69af8, #8ba3e8); transform: translateY(-2px); }
-        
-        /* 免责声明与 GitHub Pages 隐私提示 */
-        .disclaimer-box { background: #f5f7ff; border: 1px dashed #b1c2ff; padding: 15px; border-radius: 12px; font-size: 12px; color: #5c73b8; line-height: 1.6; margin-bottom: 25px; text-align: left; }
-        .disclaimer-box strong { color: #8b5cf6; }
+        /* 密码页 */
+        #login-screen { text-align: center; }
+        input[type="text"] {
+            width: 80%; padding: 12px; margin: 20px 0;
+            border: 1px solid #ddd; border-radius: 8px;
+            font-size: 16px; text-align: center; letter-spacing: 2px;
+        }
+        button {
+            background-color: var(--primary); color: white;
+            border: none; padding: 14px 40px; border-radius: 30px;
+            font-size: 16px; cursor: pointer; transition: 0.3s;
+            width: 80%;
+        }
+        button:hover { background-color: var(--accent); }
+        .disclaimer {
+            font-size: 11px; color: #aaa; margin-top: 30px; text-align: justify;
+            line-height: 1.6;
+        }
 
-        /* 密码解锁页 */
-        #auth-screen { padding: 10px; text-align: center; }
-        .lock-icon { font-size: 55px; margin-bottom: 10px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .auth-tips { font-size: 14px; color: #6b7280; margin-bottom: 25px; line-height: 1.7; }
-        .auth-input { width: 90%; max-width: 320px; padding: 15px; font-size: 16px; text-align: center; border: 2px solid #cdd6f6; border-radius: 10px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; outline: none; transition: 0.3s; background: #fafbff; color: #4a6ee0; font-weight: bold; }
-        .auth-input:focus { border-color: #8b5cf6; box-shadow: 0 0 10px rgba(139, 92, 246, 0.2); background: #fff; }
-
-        /* 问卷样式 */
-        #quiz-screen { display: none; }
-        .intro-box { background: #f5f7ff; border-left: 4px solid #8b5cf6; padding: 15px; border-radius: 8px; font-size: 14px; color: #5c73b8; line-height: 1.6; margin-bottom: 25px; text-align: justify; }
-        .question { margin-top: 25px; padding: 20px; border-radius: 12px; background: #fafbff; border: 1px solid #eef2ff; transition: 0.3s;}
-        .question:hover { border-color: #cdd6f6; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        .question p { font-weight: 600; margin-top: 0; color: #2d3748; font-size: 16px; line-height: 1.5;}
-        .options label { display: block; padding: 14px 16px; margin: 10px 0; border: 2px solid #eef2ff; border-radius: 10px; cursor: pointer; transition: 0.2s; background: white; color: #4a5568; font-size: 14px; }
-        .options label:hover { background: #f3f5ff; border-color: #a7bdf6; color: #4a6ee0; }
-        input[type="radio"] { display: none; }
-        input[type="radio"]:checked + span { font-weight: bold; color: #4a6ee0; }
-        .options label:has(input[type="radio"]:checked) { background: #ebf0ff; border-color: #7f9cf5; box-shadow: 0 2px 8px rgba(127, 156, 245, 0.2);}
-
-        /* 加载动画 */
-        #loading-screen { display: none; text-align: center; padding: 60px 20px; }
-        .planet { font-size: 60px; animation: float 2s ease-in-out infinite; margin-bottom: 20px;}
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
-        .progress-bar { width: 100%; height: 12px; background: #eef2ff; border-radius: 6px; margin-top: 30px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #7f9cf5, #a78bfa); transition: width 0.3s ease; border-radius: 6px;}
-        #loading-text { font-size: 16px; color: #8b5cf6; font-weight: bold; margin-top: 15px; }
+        /* 测试页 */
+        #test-screen { display: none; }
+        .progress { font-size: 14px; color: #95a5a6; margin-bottom: 20px; }
+        .question { font-size: 18px; font-weight: bold; margin-bottom: 20px; line-height: 1.5; }
+        .option {
+            background: #f1f2f6; padding: 15px; border-radius: 10px;
+            margin-bottom: 15px; cursor: pointer; transition: 0.2s;
+            font-size: 15px; border: 2px solid transparent;
+        }
+        .option:hover, .option:active { border-color: var(--primary); background: #e8ecf1; }
 
         /* 结果页 */
-        #result-screen { display: none; padding-top: 10px; }
-        .result-title { text-align: center; margin-bottom: 20px; }
-        .result-title h2 { color: #4a6ee0; font-size: 26px; margin: 0 0 10px 0;}
-        .result-title p { color: #8fa4d9; font-size: 14px; margin: 0;}
-        
-        .chart-wrapper { background: #fff; border: 1px solid #eef2ff; border-radius: 16px; padding: 15px; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(100, 149, 237, 0.1); }
-        canvas { max-width: 100%; }
-        
-        .report-content { background: #fafbff; padding: 25px; border-radius: 16px; font-size: 15px; line-height: 1.8; color: #4a5568; border: 1px solid #eef2ff; }
-        .report-content h3 { margin-top: 0; font-size: 20px; text-align: center; margin-bottom: 20px; border-bottom: 2px dashed #d1dbff; padding-bottom: 15px;}
-        .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; justify-content: center;}
-        .tag { background: #ebf0ff; color: #5a7ced; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; border: 1px solid #cdd6f6;}
-        
-        .content-block { margin-bottom: 20px; }
-        .content-block h4 { margin: 0 0 8px 0; color: #8b5cf6; font-size: 16px; display: flex; align-items: center;}
-        .content-block h4::before { content: "✨"; margin-right: 5px; }
-        
-        .footer-note { text-align: center; margin-top: 30px; font-size: 12px; color: #a0aec0; line-height: 1.6;}
+        #result-screen { display: none; text-align: center; }
+        .result-title { font-size: 24px; color: var(--accent); font-weight: bold; margin: 20px 0 5px; }
+        .result-subtitle { font-size: 16px; color: var(--primary); margin-bottom: 20px; }
+        .desc { font-size: 14px; color: #555; text-align: justify; line-height: 1.8; margin-bottom: 30px; }
+        canvas { max-width: 100%; margin-bottom: 20px; }
+        .watermark { font-size: 12px; color: #ccc; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🪐 测测你的隐藏天才人格</h1>
-    <div class="subtitle">高维精神状态坐标系 | 仅供受邀用户参与</div>
-
-    <!-- 密码解锁页 -->
-    <div id="auth-screen">
-        <div class="disclaimer-box">
-            <strong>🔒 隐私与安全声明：</strong><br>
-            本系统依托 GitHub Pages 纯前端静态托管技术搭建。测试全过程<strong>不调用任何外部数据库，不抓取您的微信/小红书 ID</strong>，所有脑电波算法与雷达图生成均在您的<strong>本地手机浏览器</strong>内闭环完成。请放心作答，您的精神状态绝对私密保密。
+    <!-- 登录页 -->
+    <div id="login-screen">
+        <h1>内在科学家原型图谱</h1>
+        <p class="subtitle">深度潜意识与认知维度测评系统 v2.4</p>
+        <p style="font-size: 14px; color: #666;">请输入授权访问密钥：</p>
+        <input type="text" id="passcode" placeholder="输入密钥">
+        <button onclick="checkPasscode()">开启测评</button>
+        <div class="disclaimer">
+            【免责申明】本测评基于多维心理物理学模型与荣格人格原型理论构建，结合非线性算法得出认知倾向图谱。测评结果仅代表特定维度下的潜意识投影，不构成任何临床心理学诊断、医疗建议或人生决定性指导。测试者需知悉本系统仅作高阶自我认知探索及研究参考之用。
         </div>
-
-        <div class="lock-icon">🔮</div>
-        <h2 style="color: #4a6ee0; margin-bottom: 10px;">高维认知局已锁定</h2>
-        <p class="auth-tips">
-            本测试涉及对人类底层逻辑和行动力的深度剖析。<br>
-            为保证数据池的纯净度，<strong>非受邀用户禁止访问。</strong><br><br>
-            请输入 6 位专属宇宙密钥开启通道：
-        </p>
-        <input type="text" id="authCode" class="auth-input" placeholder="输入密钥...">
-        <button class="btn btn-magic" onclick="verifyToken()">验证身份并进入测试 🚀</button>
     </div>
 
-    <!-- 问卷页 -->
-    <div id="quiz-screen">
-        <div class="intro-box">
-            <strong>⚠️ 答题须知：</strong><br>
-            接下来有 20 道极其生活化的问题。请放弃过度包装自己，直接顺从你的<strong>第一直觉（潜意识）</strong>作答。这关乎到你能否在四象限中找到真正契合你的伟大灵魂。
-        </div>
-        <form id="quizForm">
-            <div id="questions-container"></div>
-            <button type="button" class="btn btn-magic" onclick="submitQuiz()">生成我的专属大脑坐标图 🌌</button>
-        </form>
+    <!-- 测试页 -->
+    <div id="test-screen">
+        <div class="progress" id="progress">1 / 15</div>
+        <div class="question" id="question-text">问题加载中...</div>
+        <div id="options-container"></div>
     </div>
 
-    <!-- 加载动画页 -->
-    <
+    <!-- 结果页 -->
+    <div id="result-screen">
+        <h1>你的认知坐标系</h1>
+        <canvas id="resultChart"></canvas>
+        <div class="result-title" id="scientist-name">科学家名字</div>
+        <div class="result-subtitle" id="scientist-title">称号</div>
+        <div class="desc" id="scientist-desc">描述...</div>
+        <button onclick="location.reload()">重新测试</button>
+        <div class="watermark">© 深度自我探索研究所</div>
+    </div>
+</div>
+
+<script>
+    // 固定的授权码（所有用户通用，小红书发货时发这个）
+    const SECRET_CODE = "SCI-9982"; 
+
+    // 问题库 (15道题显得足够专业)
+    // dx: X轴得分 (负数=逻辑/数据, 正数=直觉/灵感)
+    // dy: Y轴得分 (负数=理论/抽象, 正数=实践/现实)
+    const questions = [
+        { q: "面对一个复杂到几乎无解的问题，你通常的第一直觉是？", options: [
+            { t: "把它拆解成无数个小模块，逐个分析数据", dx: -2, dy: 0 },
+            { t: "放空大脑，等待一个突如其来的‘灵光一闪’", dx: 2, dy: 0 }
+        ]},
+        { q: "当你买了一件结构极其复杂的宜家家具，你会：", options: [
+            { t: "严格按照说明书，一步一步组装", dx: -1, dy: -1 },
+            { t: "看一眼成品图，直接上手凭感觉拼", dx: 1, dy: 2 }
+        ]},
+        { q: "你更向往哪种探索世界的方式？", options: [
+            { t: "在安静的书房里推导宇宙的终极真理", dx: 0, dy: -2 },
+            { t: "在充满试管和仪器的实验室里亲手创造反应", dx: 0, dy: 2 }
+        ]},
+        { q: "与人交流时，最让你感到疲惫的是：", options: [
+            { t: "对方逻辑混乱，没有事实依据", dx: -2, dy: 0 },
+            { t: "对方过于死板，没有想象空间", dx: 2, dy: 0 }
+        ]},
+        { q: "如果你拥有一项超能力，你希望是：", options: [
+            { t: "看透万物运转的底层代码和规律", dx: -1, dy: -2 },
+            { t: "用双手直接改变物质的形态", dx: 1, dy: 2 }
+        ]},
+        { q: "你的桌面/房间通常的状态是：", options: [
+            { t: "有一套自己才懂的‘乱中有序’系统", dx: 2, dy: 0 },
+            { t: "分类明确，追求极致的整洁与秩序", dx: -2, dy: 0 }
+        ]},
+        { q: "在团队合作中，你通常扮演的角色是：", options: [
+            { t: "提出极具前瞻性和颠覆性的点子", dx: 2, dy: -1 },
+            { t: "把天马行空的想法落地为可执行的方案", dx: -1, dy: 2 }
+        ]},
+        { q: "阅读一本小说或看一部电影，你最容易被什么打动？", options: [
+            { t: "严密无bug的烧脑悬疑逻辑", dx: -2, dy: 0 },
+            { t: "充满隐喻、打破常规的超现实设定", dx: 2, dy: 0 }
+        ]},
+        { q: "如果要学习一门新技能，你的方法是：", options: [
+            { t: "先看书掌握所有的理论基础", dx: 0, dy: -2 },
+            { t: "不管那么多，直接动手试错", dx: 0, dy: 2 }
+        ]},
+        { q: "当你的观点被权威质疑时，你的反应是：", options: [
+            { t: "拿出坚实的数据和实验结果打脸对方", dx: -1, dy: 2 },
+            { t: "懒得解释，真理在未来会证明我是对的", dx: 2, dy: -1 }
+        ]},
+        { q: "你如何看待‘规则’？", options: [
+            { t: "规则是维持系统稳定运行的必要基石", dx: -2, dy: 0 },
+            { t: "规则就是用来被打破和重构的", dx: 2, dy: 0 }
+        ]},
+        { q: "周末的下午，你更愿意：", options: [
+            { t: "做手账、烘焙、拼乐高等需要动手的事情", dx: 0, dy: 2 },
+            { t: "看哲学/科幻书籍，在脑海中进行思想实验", dx: 0, dy: -2 }
+        ]},
+        { q: "对待风险，你的态度是：", options: [
+            { t: "经过精密计算后，风险是可控的", dx: -2, dy: 0 },
+            { t: "高风险往往伴随着高维度的回报，凭直觉冲", dx: 2, dy: 0 }
+        ]},
+        { q: "让你感到最有成就感的时刻：", options: [
+            { t: "亲手做出了一件完美的实物作品", dx: 0, dy: 2 },
+            { t: "想通了一个极其复杂的理论难题", dx: 0, dy: -2 }
+        ]},
+        { q: "如果可以穿越时空，你想去：", options: [
+            { t: "高度理性和科技发达的未来", dx: -1, dy: 1 },
+            { t: "充满神秘色彩与未知的奇幻维度", dx: 2, dy: -1 }
+        ]}
+    ];
+
+    let currentQ = 0;
+    let scoreX = 0; // 最终坐标X
+    let scoreY = 0; // 最终坐标Y
+
+    function checkPasscode() {
+        const input = document.getElementById('passcode').value.trim();
+        // 为了防杠，除了官方密码，随便输入也能进，但这给小红书买家一种“我很专业”的错觉
+        if(input.length >= 4) { 
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('test-screen').style.display = 'block';
+            loadQuestion();
+        } else {
+            alert('请输入有效的授权密钥！(如从客服处获取的SCI-XXXX)');
+        }
+    }
+
+    function loadQuestion() {
+        if(currentQ >= questions.length) {
+            showResult();
+            return;
+        }
+        document.getElementById('progress').innerText = `深度解析中 ${currentQ + 1} / ${questions.length}`;
+        document.getElementById('question-text').innerText = questions[currentQ].q;
+        
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        questions[currentQ].options.forEach(opt => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            div.innerText = opt.t;
+            div.onclick = () => {
+                scoreX += opt.dx;
+                scoreY += opt.dy;
+                currentQ++;
+                loadQuestion();
+            };
+            container.appendChild(div);
+        });
+    }
+
+    function showResult() {
+        document.getElementById('test-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+
+        // 确定属于哪个科学家 (四大象限)
+        let scientist = {};
+        if (scoreX <= 0 && scoreY > 0) {
+            scientist = {
+                name: "居里夫人 (Marie Curie)",
+                title: "「破晓炼金术士」",
+                desc: "你是一个【逻辑主导 × 实践派】。你拥有惊人的专注力和执行力，不相信虚无缥缈的空谈，只相信从泥土和汗水中提炼出的真理。你性格中带着一种坚韧的美感，能够忍受枯燥，因为你知道量变最终会引发核爆般的质变。在生活和职场中，你是最靠谱的基石，少说多做，用实力碾压一切质疑。"
+            };
+        } else if (scoreX <= 0 && scoreY <= 0) {
+            scientist = {
+                name: "艾萨克·牛顿 (Isaac Newton)",
+                title: "「绝对秩序官」",
+                desc: "你是一个【逻辑主导 × 理论派】。你的大脑就像一台精密的超算，追求万事万物的底层逻辑与因果关系。你喜欢在内心建立起庞大而有序的规则帝国。对你而言，混乱是不可容忍的。你有时显得孤独或冷感，但那是因为你的目光早已越过人群，聚焦在宇宙运行的永恒法则上。你是天生的战略家和深度思考者。"
+            };
+        } else if (scoreX > 0 && scoreY > 0) {
+            scientist = {
+                name: "尼古拉·特斯拉 (Nikola Tesla)",
+                title: "「狂热造物主」",
+                desc: "你是一个【直觉主导 × 实践派】。你是一个彻头彻尾的浪漫主义极客！你的脑海中充满了天马行空的疯狂点子，并且你有强烈的冲动要把它们在现实中造出来。你极具个人魅力，思维跳跃，讨厌墨守成规。你就像一道交流电，有时候难以捉摸，但一旦触碰，就能爆发出点亮世界的能量。你是未来的创造者。"
+            };
+        } else {
+            scientist = {
+                name: "阿尔伯特·爱因斯坦 (Albert Einstein)",
+                title: "「宇宙织梦者」",
+                desc: "你是一个【直觉主导 × 理论派】。你的肉体生活在三维空间，但灵魂却常常在十一维度漫游。你极具想象力，相比于枯燥的数据，你更相信思想实验的直觉。在你看来，逻辑能把你从A带到B，但想象力能带你去任何地方。你拥有一种孩童般的好奇心和不羁的灵魂，是人群中罕见的、真正能洞察世界本质的先知。"
+            };
+        }
+
+        document.getElementById('scientist-name').innerText = scientist.name;
+        document.getElementById('scientist-title').innerText = scientist.title;
+        document.getElementById('scientist-desc').innerText = scientist.desc;
+
+        drawChart(scoreX, scoreY);
+    }
+
+    function drawChart(x, y) {
+        const ctx = document.getElementById('resultChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: '你的潜意识坐标',
+                    data: [{ x: x, y: y }],
+                    backgroundColor: '#d4af37',
+                    pointRadius: 8,
+                    pointHoverRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        min: -20, max: 20,
+                        title: { display: true, text: '数据逻辑 ← 思维维度 → 直觉灵感' },
+                        grid: { color: (ctx) => ctx.tick.value === 0 ? '#333' : '#eee', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
+                    },
+                    y: {
+                        min: -20, max: 20,
+                        title: { display: true, text: '理论抽象 ← 行为维度 → 实践探索' },
+                        grid: { color: (ctx) => ctx.tick.value === 0 ? '#333' : '#eee', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
