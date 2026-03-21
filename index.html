@@ -3,82 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>心智奇境：内在人格原型剖析</title>
+    <title>高阶心智解析：你的六维科学家原型</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* 极致的暗黑极客/星空蓝视觉风格 */
         :root {
-            --bg-color: #F8F6F0; 
-            --primary: #C87A6A; 
-            --text-dark: #333333; 
-            --text-light: #999999;
-            --card-bg: #FFFFFF;
-            --tag-bg: #F0EBE1;
-            --green: #82A08F;
-            --alert-red: #D26969;
+            --bg-deep: #0A0D14;
+            --card-bg: #141824;
+            --neon-cyan: #00F0FF;
+            --neon-purple: #B026FF;
+            --text-main: #E2E8F0;
+            --text-muted: #828B9C;
+            --border-color: rgba(0, 240, 255, 0.15);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-color); color: var(--text-dark); min-height: 100vh; display: flex; justify-content: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-deep); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 480px; min-height: 100vh; position: relative; padding: 20px; display: flex; flex-direction: column; overflow-x: hidden; }
-        .view { display: none; width: 100%; flex: 1; flex-direction: column; animation: fadeIn 0.6s ease forwards; opacity: 0; }
+        
+        .view { display: none; width: 100%; flex: 1; flex-direction: column; animation: fadeIn 0.5s ease forwards; opacity: 0; }
         .view.active { display: flex; }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(10px); } }
 
-        .card { background: var(--card-bg); border-radius: 20px; padding: 30px 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.03); margin-bottom: 20px; }
-        .title { font-size: 24px; font-weight: 700; text-align: center; color: var(--primary); margin-bottom: 8px; letter-spacing: 1px; }
-        .subtitle { font-size: 13px; text-align: center; color: var(--text-light); margin-bottom: 24px; letter-spacing: 2px; }
+        /* 卡片与通用UI */
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 30px 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); margin-bottom: 20px; position: relative; overflow: hidden; }
+        .title { font-size: 24px; font-weight: 800; text-align: center; color: #FFF; margin-bottom: 8px; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,240,255,0.3); }
+        .subtitle { font-size: 12px; text-align: center; color: var(--neon-cyan); margin-bottom: 24px; letter-spacing: 2px; }
         
-        input[type="text"] { width: 100%; background: #F8F6F0; border: 1px solid transparent; padding: 16px; border-radius: 12px; font-size: 15px; text-align: center; margin-bottom: 20px; color: var(--text-dark); outline: none; transition: 0.3s; letter-spacing: 1px;}
-        input[type="text"]:focus { border-color: var(--primary); background: #FFF; box-shadow: 0 4px 12px rgba(200, 122, 106, 0.1); }
+        input[type="text"] { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; font-size: 15px; text-align: center; margin-bottom: 20px; color: #FFF; outline: none; transition: 0.3s; letter-spacing: 1px;}
+        input[type="text"]:focus { border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
         
-        .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: 0.2s; box-shadow: 0 6px 16px rgba(200, 122, 106, 0.25); }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px 6px rgba(200, 122, 106, 0.25); }
+        .btn { width: 100%; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color: white; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: bold; letter-spacing: 1px; cursor: pointer; transition: 0.2s; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .btn:active { transform: scale(0.98); }
 
-        .progress-text { font-size: 13px; font-weight: bold; color: var(--text-light); margin-bottom: 15px; text-align: center; letter-spacing: 1px;}
-        .question-text { font-size: 17px; line-height: 1.6; margin-bottom: 30px; font-weight: 600; text-align: justify; }
-        .option { background: var(--bg-color); border: 1px solid transparent; padding: 16px 20px; border-radius: 14px; margin-bottom: 12px; font-size: 15px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; line-height: 1.5; color: #444; }
-        .option:active { background: #EFECE3; border-color: var(--primary); transform: scale(0.98); }
-        .opt-letter { font-weight: 800; color: var(--primary); margin-right: 15px; font-size: 16px; opacity: 0.8; }
+        /* 问答页专有UI */
+        .progress-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--neon-cyan); width: 0%; transition: width 0.3s ease; }
+        .q-meta { font-size: 12px; color: var(--neon-purple); font-weight: bold; margin-bottom: 15px; letter-spacing: 1px; }
+        .question-text { font-size: 18px; line-height: 1.6; margin-bottom: 30px; font-weight: 600; text-align: justify; color: #FFF; }
+        
+        /* 李克特量表选项样式 */
+        .scale-opt { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 16px 20px; border-radius: 14px; margin-bottom: 12px; font-size: 15px; cursor: pointer; transition: all 0.2s; text-align: center; font-weight: 500; }
+        .scale-opt:active { background: rgba(0, 240, 255, 0.1); border-color: var(--neon-cyan); }
+        .anchor-opt { text-align: left; line-height: 1.5; padding: 18px; } /* 锚点题特殊样式 */
 
+        /* Loading */
         .loading-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; }
-        .spinner { width: 44px; height: 44px; border: 4px solid #EFECE3; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
+        .spinner { width: 50px; height: 50px; border: 3px solid rgba(0,240,255,0.1); border-top-color: var(--neon-cyan); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { font-size: 14px; color: var(--text-dark); letter-spacing: 1px; font-weight: 500; height: 20px; transition: opacity 0.3s; }
+        .loading-text { font-size: 14px; color: var(--neon-cyan); letter-spacing: 2px; height: 20px; }
 
-        #poster { background: var(--card-bg); border-radius: 20px; padding: 30px 20px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.04); }
+        /* --- 极客风生成海报页 --- */
+        #poster { background: #0F131F; border-radius: 20px; padding: 30px 20px; position: relative; border: 1px solid #1A233A; }
+        .poster-bg { position: absolute; top:0; left:0; right:0; bottom:0; background: radial-gradient(circle at top right, rgba(176,38,255,0.05), transparent 50%), radial-gradient(circle at bottom left, rgba(0,240,255,0.05), transparent 50%); z-index: 0; pointer-events: none; border-radius: 20px; }
         
-        .user-info { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; }
-        .pre-title { font-size: 12px; color: var(--text-light); letter-spacing: 1px; margin-bottom: 8px; }
-        .res-name { font-size: 28px; font-weight: 900; color: var(--primary); margin-bottom: 12px; text-align: center; line-height: 1.3; }
+        .user-info { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; position: relative; z-index: 1; }
+        .pre-title { font-size: 12px; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; }
+        .res-name { font-size: 26px; font-weight: 900; color: #FFF; margin-bottom: 15px; text-align: center; line-height: 1.4; text-shadow: 0 0 15px rgba(0,240,255,0.4); }
         
         .tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 25px; }
-        .tag { background: var(--tag-bg); color: var(--text-dark); font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600; letter-spacing: 0.5px;}
+        .tag { background: rgba(0,240,255,0.1); color: var(--neon-cyan); border: 1px solid rgba(0,240,255,0.2); font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: bold; letter-spacing: 1px;}
         
-        .section-title { font-size: 15px; font-weight: 800; color: var(--text-dark); margin: 30px 0 15px 0; display: flex; align-items: center; justify-content: center; }
-        .section-title::before, .section-title::after { content: ""; width: 20px; height: 1px; background: #ddd; margin: 0 10px; }
+        .section-title { font-size: 14px; font-weight: bold; color: #FFF; margin: 35px 0 15px 0; display: flex; align-items: center; position: relative; z-index: 1; }
+        .section-title::before { content: ""; width: 4px; height: 14px; background: var(--neon-purple); border-radius: 2px; margin-right: 8px; box-shadow: 0 0 8px var(--neon-purple); }
         
-        .chart-box { width: 100%; aspect-ratio: 1.1; position: relative; margin-bottom: 10px; }
+        .chart-box { width: 100%; aspect-ratio: 1.1; position: relative; margin-bottom: 10px; z-index: 1; }
         
-        /* 坐标系回退到极简好看的灰白版本 */
-        .coord-box { width: 100%; max-width: 250px; height: 250px; margin: 0 auto 20px auto; background: #faf8f5; border-radius: 16px; position: relative; border: 1px solid #eee; }
-        .c-axis-x { position: absolute; top: 50%; left: 8%; right: 8%; height: 1px; background: #ddd; }
-        .c-axis-y { position: absolute; left: 50%; top: 8%; bottom: 8%; width: 1px; background: #ddd; }
-        .c-label { position: absolute; font-size: 10px; color: #999; font-weight: 500; }
-        .c-top { top: 4px; left: 50%; transform: translateX(-50%); }
-        .c-bottom { bottom: 4px; left: 50%; transform: translateX(-50%); }
-        .c-left { left: 4px; top: 50%; transform: translateY(-50%); }
-        .c-right { right: 4px; top: 50%; transform: translateY(-50%); }
-        .c-dot { position: absolute; width: 14px; height: 14px; background: var(--primary); border-radius: 50%; border: 2px solid #fff; transform: translate(-50%, -50%); box-shadow: 0 2px 6px rgba(200,122,106,0.4); z-index: 2; }
+        /* 二维坐标系 (暗黑极客风) */
+        .coord-box { width: 100%; max-width: 260px; height: 260px; margin: 0 auto 20px auto; background: rgba(0,0,0,0.2); border-radius: 12px; position: relative; border: 1px solid rgba(255,255,255,0.05); z-index: 1; }
+        .c-axis-x { position: absolute; top: 50%; left: 5%; right: 5%; height: 1px; background: rgba(255,255,255,0.1); }
+        .c-axis-y { position: absolute; left: 50%; top: 5%; bottom: 5%; width: 1px; background: rgba(255,255,255,0.1); }
+        .c-label { position: absolute; font-size: 10px; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; }
+        .c-top { top: 6px; left: 50%; transform: translateX(-50%); }
+        .c-bottom { bottom: 6px; left: 50%; transform: translateX(-50%); }
+        .c-left { left: 6px; top: 50%; transform: translateY(-50%); }
+        .c-right { right: 6px; top: 50%; transform: translateY(-50%); }
+        .c-dot { position: absolute; width: 12px; height: 12px; background: var(--neon-cyan); border-radius: 50%; box-shadow: 0 0 12px var(--neon-cyan); transform: translate(-50%, -50%); z-index: 2; }
         
-        .commentary { font-size: 14px; line-height: 1.8; color: #444; text-align: justify; margin-bottom: 25px; padding: 0 5px; }
+        /* 文案区 */
+        .commentary { font-size: 14px; line-height: 1.8; color: var(--text-main); text-align: justify; margin-bottom: 25px; padding: 0 5px; position: relative; z-index: 1; }
         
-        .insight-box { border-radius: 12px; padding: 18px; margin-bottom: 15px; font-size: 13px; line-height: 1.6; text-align: justify; }
-        .insight-box.awaken { background: #F0F6F2; border-left: 4px solid var(--green); color: #2C4A3A; }
-        .insight-box.trigger { background: #FEF3F3; border-left: 4px solid var(--alert-red); color: #5C2C2C; }
-        .insight-title { font-weight: 800; margin-bottom: 8px; font-size: 14px; display: flex; align-items: center; }
+        .insight-box { border-radius: 12px; padding: 18px; margin-bottom: 15px; font-size: 13px; line-height: 1.6; text-align: justify; position: relative; z-index: 1; border: 1px solid; }
+        .insight-box.trigger { background: rgba(255, 50, 50, 0.05); border-color: rgba(255, 50, 50, 0.2); border-left: 4px solid #FF3232; color: #FCA5A5; }
+        .insight-box.awaken { background: rgba(0, 240, 255, 0.05); border-color: rgba(0, 240, 255, 0.2); border-left: 4px solid var(--neon-cyan); color: #A5F3FC; }
+        .insight-title { font-weight: bold; margin-bottom: 10px; font-size: 14px; display: flex; align-items: center; color: #FFF; }
         
-        .footer-disclaimer { text-align: center; margin-top: 35px; border-top: 1px dashed #E5E5E5; padding-top: 20px; }
-        .disclaim-text { font-size: 10px; color: #B3B3B3; line-height: 1.6; letter-spacing: 0.5px; }
+        .footer-disclaimer { text-align: center; margin-top: 40px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 20px; position: relative; z-index: 1; }
+        .disclaim-text { font-size: 10px; color: #666; line-height: 1.6; letter-spacing: 0.5px; }
+
     </style>
 </head>
 <body>
@@ -86,17 +98,19 @@
 <div class="container">
     <div id="view-login" class="view active card" style="margin: auto 0;">
         <h1 class="title" style="margin-top: 10px;">深层人格原型剖析</h1>
-        <div class="subtitle">寻找你潜意识里的科学家</div>
-        <p style="font-size: 14px; color: #666; margin-bottom: 30px; text-align: justify; line-height: 1.7; padding: 0 10px;">
-            这是一场基于日常行为学与潜意识投射的心理学深度剖析。包含25个极其真实的生活情境。请在一个安静的环境下，凭借第一直觉作答。
+        <div class="subtitle">寻找你潜意识里的高阶科学家</div>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 30px; text-align: justify; line-height: 1.8; padding: 0 5px;">
+            这是一场基于「第一性原理」与「行为动力学」的专业人格测评。包含24道深层行为映射题与1道命运锚点题。<br><br>
+            ⚠️ 警告：请放弃社交伪装，凭绝对的第一直觉作答。
         </p>
-        <input type="text" id="pwd" placeholder="请输入11位专属访问密钥" autocomplete="off">
-        <button class="btn" onclick="startTest()">开启内心解析</button>
+        <input type="text" id="pwd" placeholder="请输入专属访问密钥解锁" autocomplete="off">
+        <button class="btn" onclick="startTest()">启动神经元链接</button>
     </div>
 
     <div id="view-quiz" class="view">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
         <div class="card" style="flex:1;">
-            <div class="progress-text" id="q-num">深度解析进度 01 / 25</div>
+            <div class="q-meta" id="q-num">数据采集 01 / 25</div>
             <div class="question-text" id="q-text">加载中...</div>
             <div id="opts-box"></div>
         </div>
@@ -105,273 +119,165 @@
     <div id="view-loading" class="view">
         <div class="loading-container">
             <div class="spinner"></div>
-            <div class="loading-text" id="loading-msg">正在提取行为特征...</div>
+            <div class="loading-text" id="loading-msg">正在交叉比对决策逻辑...</div>
         </div>
     </div>
 
     <div id="view-result" class="view">
         <div id="poster">
+            <div class="poster-bg"></div>
+            
             <div class="user-info">
-                <div class="pre-title">经检测，你灵魂深处的科学家原型是</div>
+                <div class="pre-title">经核心算法检测，你的内在原型是</div>
                 <div class="res-name" id="res-name">加载中...</div>
             </div>
             <div class="tags" id="res-tags"></div>
 
-            <div class="section-title">五维心智雷达</div>
+            <div class="section-title">六维心智雷达图</div>
             <div class="chart-box"><canvas id="radarChart"></canvas></div>
 
-            <div class="section-title">人格动力坐标系</div>
+            <div class="section-title">人格动力学矩阵</div>
             <div class="coord-box">
                 <div class="c-axis-x"></div><div class="c-axis-y"></div>
-                <div class="c-label c-top">理论构想</div><div class="c-label c-bottom">现实落地</div>
-                <div class="c-label c-left">感性直觉</div><div class="c-label c-right">理性逻辑</div>
+                <div class="c-label c-top">混沌 / 破局</div><div class="c-label c-bottom">守序 / 规律</div>
+                <div class="c-label c-left">现实 / 务实</div><div class="c-label c-right">理论 / 抽象</div>
                 <div class="c-dot" id="c-dot" style="left:50%; top:50%;"></div>
             </div>
 
-            <div class="section-title">深层人格潜台词</div>
+            <div class="section-title">灵魂扫描报告</div>
             <div class="commentary" id="res-desc">...</div>
 
-            <div class="insight-box awaken">
-                <div class="insight-title">✨ 觉醒指南（如何变强）</div>
-                <div id="res-awaken">...</div>
-            </div>
             <div class="insight-box trigger">
-                <div class="insight-title">💥 致命雷点（千万别碰）</div>
+                <div class="insight-title">💣 个人致命雷点（精准防御）</div>
                 <div id="res-trigger">...</div>
+            </div>
+            <div class="insight-box awaken">
+                <div class="insight-title">🚀 进阶破局指南（财富/认知跃迁）</div>
+                <div id="res-awaken">...</div>
             </div>
 
             <div class="footer-disclaimer">
                 <div class="disclaim-text">
-                    本报告基于行为学模型生成，结果仅供自我察觉与成长参考。<br>
-                    最终解释权归测试发布方所有。<br><br>
+                    ⚠️ 仅有 3.5% 的人拥有这个隐藏特质<br>
+                    本报告基于统计行为学模型生成，仅供自我认知突破参考。<br><br>
                     <strong>© 2024 测测看文化创意工作室</strong>
                 </div>
             </div>
         </div>
-        <button class="btn" style="margin-top:20px;" onclick="saveImg()" id="btn-save">一键生成专属图文海报</button>
+        <button class="btn" style="margin-top:20px;" onclick="saveImg()" id="btn-save">一键生成专属雷达名片</button>
     </div>
 </div>
 
 <script>
     const VALID_PWD = "X7k9P2mR4vL";
-    let totalScore = { radar: [0,0,0,0,0], coord: {x:0, y:0} };
+    
+    // 6维得分: [A爱因斯坦, B居里, C特斯拉, D达尔文, E达芬奇, F牛顿]
+    let scores = [0, 0, 0, 0, 0, 0]; 
+    let coordMod = {x: 0, y: 0}; // 第25题的坐标修正
     let currQ = 0;
 
-    // 100% 贴近人类真实生活的 25 道情境题
-    const QData = [
-        { q: "1. 休息日在家准备大扫除，你通常的状态是：", o: [
-            ["先把工具准备好，规划好从卧室到客厅的最优清扫路线", [4,0,3,0,5, 2,-1]],
-            ["本来只想收拾桌子，结果翻出旧相册看了一个小时", [0,5,0,2,0, -2,2]],
-            ["看着很乱觉得心烦，直接动手一顿猛干，搞完拉倒", [0,0,5,0,0, 1,-3]],
-            ["一边听播客/音频一边收拾，把这当成一种解压仪式", [0,2,2,3,0, -1,1]],
-            ["实在不想动，先在沙发上躺平做心理建设", [0,3,0,1,0, -1,1]]
-        ]},
-        { q: "2. 朋友在微信上找你吐槽对象的奇葩行为，长篇大论发了一堆，你会：", o: [
-            ["敏锐地指出这件事里双方各自的问题，并给出解决建议", [5,0,0,0,1, 3,-1]],
-            ["跟着对方一起疯狂痛骂，情绪价值直接拉满", [0,1,0,5,0, -3,0]],
-            ["发各种抱抱的表情包，约对方出来吃顿好的散散心", [0,0,3,4,0, -2,-2]],
-            ["思考为什么很多人总是会在恋爱中失去理智", [3,3,0,0,0, 2,2]],
-            ["简单附和几句，其实内心觉得这算多大点事儿", [2,0,0,0,0, 1,0]]
-        ]},
-        { q: "3. 刚买了一件需要自己组装的复杂家具（比如大衣柜），你的第一反应：", o: [
-            ["立刻把说明书从头到尾仔细看一遍，清点零件后再动手", [5,0,1,0,4, 3,-1]],
-            ["看什么说明书，凭感觉直接拼，拼不下去再看", [0,4,4,0,0, -1,-2]],
-            ["觉得好麻烦，想直接花钱在网上下单找个师傅上门", [2,0,4,0,0, 1,-3]],
-            ["喊朋友过来一起拼，顺便当成一次聚会", [0,0,1,4,0, -2,-1]],
-            ["一边拼一边想象它摆在房间里的完美样子，越拼越有劲", [0,3,2,0,0, -1,2]]
-        ]},
-        { q: "4. 和同事或朋友一起讨论周末去哪玩，大家一直定不下来，你会：", o: [
-            ["直接甩出三个写好利弊的方案让大家投票", [4,0,3,0,4, 3,-2]],
-            ["感觉气氛有点尴尬，赶紧出来打圆场调节气氛", [0,1,0,5,0, -3,-1]],
-            ["我不挑剔，大家去哪我就去哪，主打一个陪伴", [0,0,0,4,0, -2,-1]],
-            ["觉得太墨迹了，实在不行就我来拍板定个地方", [2,0,5,0,2, 2,-3]],
-            ["默默潜水，心里其实已经开始幻想在家的快乐了", [0,4,0,0,0, -1,2]]
-        ]},
-        { q: "5. 在电影院看一部非常感人的文艺片，周围的人都哭了，你：", o: [
-            ["完全共情了主角的遭遇，眼泪止不住地流", [0,1,0,5,0, -3,0]],
-            ["虽然感人，但脑子里在想导演这个镜头的隐喻是什么", [3,4,0,0,0, 2,3]],
-            ["觉得剧情逻辑有点硬伤，有点想吐槽，但没好意思说", [5,0,0,0,2, 3,-1]],
-            ["其实没那么想哭，但觉得气氛烘托到这了，还是表现得悲伤点", [0,0,1,3,0, -1,-1]],
-            ["被电影里极美的画面和配乐深深吸引，沉浸其中", [0,5,0,0,0, -2,2]]
-        ]},
-        { q: "6. 去超市买日用品，你平时的习惯更倾向于：", o: [
-            ["去之前就在备忘录写好清单，买完直接去结账", [4,0,3,0,5, 3,-2]],
-            ["本来只想买纸巾，结果看到零食打折买了一大堆无关的", [0,4,1,0,0, -2,0]],
-            ["不看价格，哪个包装好看、或者哪个牌子习惯了就拿哪个", [0,3,0,2,0, -1,1]],
-            ["遇到新出的产品，总会忍不住停下来仔细研究一下配料表", [3,0,0,0,2, 2,2]],
-            ["漫无目的地逛，享受超市里那种充满生活气息的氛围", [0,3,0,4,0, -2,1]]
-        ]},
-        { q: "7. 遇到连续加班好几天，终于迎来休息日，你第一件事是：", o: [
-            ["报复性熬夜刷剧或打游戏，彻底清空大脑", [0,2,4,0,0, 0,-2]],
-            ["把家里打扫得干干净净，换上新床单，重新掌控生活秩序", [2,0,3,0,5, 2,-1]],
-            ["找个舒服的咖啡馆，发呆一整天或者看一本小说", [0,4,0,0,0, -2,2]],
-            ["约最要好的朋友疯狂吐槽公司，把负能量全部倒出去", [0,0,0,5,0, -3,-1]],
-            ["复盘这周为什么会这么忙，思考怎么优化下周的工作流程", [5,0,0,0,3, 3,-1]]
-        ]},
-        { q: "8. 在一个有很多陌生人的社交饭局上，你通常的状态是：", o: [
-            ["默默坐在角落，充当一个礼貌的倾听者，偶尔微笑", [0,0,0,4,0, -2,-1]],
-            ["能够迅速找到有价值的人，得体地和对方交换联系方式", [4,0,3,0,2, 2,-2]],
-            ["很容易观察到谁被冷落了，主动去搭话照顾对方的情绪", [0,2,0,5,0, -3,0]],
-            ["觉得特别无聊，脑子里早就神游天外，想赶紧回家", [0,5,0,0,0, -1,2]],
-            ["跟着节奏走，谁抛梗都能接上，是饭局的氛围担当", [0,1,4,3,0, -1,-2]]
-        ]},
-        { q: "9. 买衣服的时候，你最看重哪一点？", o: [
-            ["版型、材质、性价比，必须是百搭且实用的", [4,0,2,0,3, 2,-2]],
-            ["第一眼感觉，只要觉得“写了我的名字”就立马买下", [0,5,0,0,0, -3,1]],
-            ["关注它的设计理念或品牌背后的文化故事", [2,4,0,0,0, 1,3]],
-            ["摸起来的手感是不是绝对舒适，不舒服再好看也不买", [0,0,4,0,0, 0,-3]],
-            ["想象自己穿上它走在人群中，别人会不会觉得好看", [0,1,0,4,0, -2,-1]]
-        ]},
-        { q: "10. 如果让你策划一次公司/班级的团建活动，你会：", o: [
-            ["列出极其详尽的时间表和预算表，确保不出任何差错", [4,0,2,0,5, 3,-2]],
-            ["想一堆天马行空的好点子，但具体怎么落实让人头疼", [1,5,0,0,0, -2,3]],
-            ["私下问好几个关键人物的意见，尽量让所有人都不委屈", [0,1,0,5,0, -3,-1]],
-            ["觉得太麻烦了，直接找个现成的旅行社或轰趴馆包办", [2,0,4,0,0, 1,-3]],
-            ["不管去哪，先定一个特别有意义的主题，让大家有期待感", [0,4,0,2,0, -1,2]]
-        ]},
-        { q: "11. 当你突然感到一阵莫名的心情低落时，你最有效的解压方式是：", o: [
-            ["去跑步、打拳或者干脆搞个大扫除，让自己出汗", [0,0,5,0,2, 0,-3]],
-            ["躲进被窝里大哭一场，或者看一部特别催泪的电影", [0,1,0,5,0, -3,0]],
-            ["写日记或备忘录，理清到底是什么事情触发了我的焦虑", [4,0,2,0,2, 2,-1]],
-            ["听白噪音或者轻音乐，放空大脑什么都不想", [0,4,0,0,0, -2,2]],
-            ["出门看一场艺术展或去自然里走走，感受更大的世界", [0,3,0,0,0, -1,3]]
-        ]},
-        { q: "12. 在网上刷到和自己观点完全相反、甚至有点极端的内容，你会：", o: [
-            ["立刻在评论区写下一段极其严密的逻辑去反驳对方", [4,0,2,0,1, 3,-1]],
-            ["觉得特别生气，甚至会因此影响几分钟的心情", [0,0,0,4,0, -3,0]],
-            ["觉得人类的参差很有意思，点进主页看看这人到底长啥样", [2,3,0,0,0, 1,2]],
-            ["直接点“不感兴趣”或拉黑，绝不浪费时间", [2,0,4,0,2, 2,-2]],
-            ["试着站在对方的角度想一想，为什么TA会这么觉得", [0,2,0,5,0, -2,1]]
-        ]},
-        { q: "13. 打算学习一项新技能（比如剪视频、学做饭），你习惯怎么开始？", o: [
-            ["先买一本评分最高的专业书，从基础原理开始啃", [5,0,0,0,3, 3,3]],
-            ["不看教程，自己瞎鼓捣，遇到不会的再去搜", [0,2,5,0,0, -1,-3]],
-            ["在B站找别人总结好的思维导图，跟着系统的目录学", [4,0,2,0,4, 2,-1]],
-            ["报个班或者拉着朋友一起学，有互动才学得下去", [0,0,1,4,0, -2,-1]],
-            ["看了大神做出来的炫酷作品，头脑发热立刻买齐全套装备", [0,4,2,0,0, -2,2]]
-        ]},
-        { q: "14. 走在一条不熟悉的街上，发现手机突然没电关机了，你会：", o: [
-            ["根据刚刚走过的路口、太阳方向大致判断方位走回去", [4,0,1,0,2, 3,-1]],
-            ["觉得有点刺激，干脆随便瞎逛，说不定能发现宝藏小店", [0,5,1,0,0, -2,2]],
-            ["立刻找路人或者进一家店去问路借充电宝", [0,0,3,4,0, -1,-2]],
-            ["沿着一条看起来最宽的主干道死走，总能走到有车的地方", [1,0,4,0,0, 1,-3]],
-            ["在脑海中回忆来之前的地图路线图", [4,2,0,0,0, 2,1]]
-        ]},
-        { q: "15. 回顾过去几年里犯的一个比较大的错误，你现在真实的想法是：", o: [
-            ["已经复盘过了，总结了教训，保证以后绝对不再犯", [5,0,0,0,3, 3,-1]],
-            ["偶尔想起来还是会有些自责，觉得当初对不起某个人", [0,1,0,5,0, -3,0]],
-            ["无所谓，没有那个错误我也走不到今天这一步", [0,3,3,0,0, -1,-2]],
-            ["觉得过去的那个自己有点陌生，现在的我肯定不会那么做", [2,3,0,0,0, 1,2]],
-            ["这是一个很好的谈资，偶尔还能拿出来调侃一下自己", [0,0,2,3,0, -1,-1]]
-        ]},
-        { q: "16. 如果必须体验以下一种极致的生活状态一周，你会选：", o: [
-            ["每天时间被精确规划到分钟，没有任何意外的自律营", [4,0,0,0,5, 3,-1]],
-            ["没网没电，只能在山谷里面对大自然的冥想闭关", [0,5,0,0,0, -2,3]],
-            ["每天要干体力活换取食物的荒岛求生", [0,0,5,0,0, 1,-3]],
-            ["每天必须和完全不同圈层的人进行深度交流的派对", [0,0,0,5,0, -3,-1]],
-            ["在一个堆满未解之谜书籍的超大图书馆里独自待着", [4,3,0,0,0, 2,3]]
-        ]},
-        { q: "17. 当你发现自己一直坚信的一个道理其实是错的时，你会：", o: [
-            ["有点懵，但查完资料确认后，立刻冷酷地推翻旧观念", [5,0,0,0,2, 3,-1]],
-            ["感到三观受冲击，内心经历一段纠结和不适的阵痛期", [0,1,0,4,0, -3,1]],
-            ["觉得太有意思了！认知边界被打破的感觉很爽", [2,5,0,0,0, 1,3]],
-            ["赶紧发给好朋友分享，探讨大家以前怎么都错了", [0,0,1,4,0, -1,-2]],
-            ["不管对错，只要现在的生活不受影响，就不当回事", [1,0,4,0,0, 1,-3]]
-        ]},
-        { q: "18. 在玩剧本杀、狼人杀这种社交游戏时，你最典型的表现：", o: [
-            ["疯狂盘逻辑、找漏洞，一定要把时间线抠得严丝合缝", [5,0,2,0,1, 3,-1]],
-            ["完全沉浸在角色的爱恨情仇里，甚至被感动到流泪", [0,1,0,5,0, -3,0]],
-            ["直觉准得可怕，就是莫名其妙觉得某个人不对劲", [0,5,0,0,0, -2,2]],
-            ["主要负责在旁边搞笑、吃零食，对输赢无所谓", [0,0,2,3,0, -1,-2]],
-            ["暗中观察所有人，心里早有答案但不急着说", [3,2,0,0,0, 2,1]]
-        ]},
-        { q: "19. 你觉得一段真正健康的恋爱或友情，最核心的基础应该是：", o: [
-            ["双方有着高度一致的底层价值观和解决问题的逻辑", [4,0,0,0,2, 3,1]],
-            ["灵魂的高度契合，即便不说话也能懂对方在想什么", [0,5,0,0,0, -2,3]],
-            ["遇到麻烦时，对方能实实在在地搭把手解决问题", [2,0,5,0,0, 1,-3]],
-            ["能完全接纳彼此的脆弱，互相提供极高的情绪价值", [0,1,0,5,0, -3,-1]],
-            ["有清晰的边界感，互相尊重对方的个人空间和秩序", [3,0,0,0,4, 2,0]]
-        ]},
-        { q: "20. 夜深人静，一个人躺在床上睡不着时，你脑子里最常飘过：", o: [
-            ["明天那件棘手的工作到底该怎么搞，心里盘算步骤", [3,0,4,0,3, 2,-2]],
-            ["时间到底存不存在？人活着的终极意义是什么？", [4,5,0,0,0, 2,3]],
-            ["今天白天那个人说的话，到底是不是在阴阳怪气我", [0,2,0,4,0, -2,0]],
-            ["如果我当年做了另一个选择，现在的我会不会更快乐", [0,4,0,1,0, -1,2]],
-            ["不想了，赶紧拿手机放个郭德纲相声或者助眠白噪音", [0,0,2,0,0, -1,-2]]
-        ]},
-        { q: "21. 对于最近很火的MBTI、星盘测试，你的真实态度是：", o: [
-            ["这就是巴纳姆效应和统计学游戏，偶尔看个乐子", [5,0,0,0,1, 3,1]],
-            ["虽然知道不一定科学，但迷茫时真的能提供很多安慰", [0,2,0,4,0, -2,-1]],
-            ["觉得非常神奇，很多时候确实解释了人性的深层动力", [0,5,0,0,0, -2,3]],
-            ["作为社交名片很好用，能快速给别人贴标签破冰", [2,0,2,0,0, 1,-2]],
-            ["从来不测或者测完就忘，觉得人不该被几个字母定义", [3,0,4,0,0, 2,-2]]
-        ]},
-        { q: "22. 桌面上的文件或电脑桌面的图标，你平时的状态是：", o: [
-            ["严格分类，新建各种文件夹，找东西绝对不超过三秒", [4,0,1,0,5, 3,-1]],
-            ["乱七八糟铺满全屏幕，反正自己要用的时候凭直觉能找到", [0,4,0,0,0, -2,2]],
-            ["乱到实在看不下去的时候，建一个“新建文件夹”全部扔进去", [0,0,4,0,1, 0,-3]],
-            ["按颜色或者极其个人的奇怪逻辑来排列，别人根本看不懂", [0,4,0,0,2, -1,2]],
-            ["经常让同事或者对象帮忙整理，自己懒得弄", [0,0,0,4,0, -2,-1]]
-        ]},
-        { q: "23. 身边关系最好的朋友如果在背后评价你，最常出现的词是：", o: [
-            ["理智得可怕，找TA分析问题一针见血，偶尔有点毒舌", [5,0,1,0,3, 3,-1]],
-            ["脑洞特别大，想法一天一个变，永远抓不住TA在想啥", [0,5,0,0,0, -2,3]],
-            ["靠谱！话不多但交办的事绝对能搞定，是个狠人", [1,0,5,0,4, 1,-3]],
-            ["中央空调小天使，大家有心事都愿意找TA倾诉的树洞", [0,0,0,5,0, -3,-1]],
-            ["看着特别随和，其实内心对某些事有着极其疯狂的执念", [0,4,0,2,0, -1,2]]
-        ]},
-        { q: "24. 在一段关系里（恋爱或合作），哪种情况会让你最快决定离开？", o: [
-            ["对方逻辑极其混乱，永远无法进行有效的沟通", [5,0,0,0,1, 3,0]],
-            ["对方极其死板无趣，把生活过成了一潭死水", [0,5,0,0,0, -2,2]],
-            ["对方只说不做，永远都在画大饼，没有任何实际行动", [1,0,5,0,0, 2,-3]],
-            ["对方极其冷漠自私，完全无视我的付出和情绪感受", [0,1,0,5,0, -3,-1]],
-            ["对方试图掌控我的一切，打破了我极其在意的个人秩序", [0,0,0,0,5, 1,1]]
-        ]},
-        { q: "25. 几十年后，如果有人为你写一本小传，你最希望书名的风格是：", o: [
-            ["《绝对理性：一个看透规则之人的清醒一生》", [5,0,0,0,2, 3,2]],
-            ["《梦境游游：一场华丽、荒诞且浪漫的自由冒险》", [0,5,0,0,0, -3,3]],
-            ["《无声胜有声：TA用双手实实在在地建造了一切》", [2,0,5,0,3, 1,-3]],
-            ["《提灯走过暗夜：那个曾温暖过无数人的普通人》", [0,0,0,5,0, -3,-1]],
-            ["无所谓书名是什么，最好只留下一串只有懂的人才懂的密码", [3,4,0,0,0, 1,2]]
-        ]}
+    // 前24题题库 (严格按维度分配，每维4题，顺序已打乱以防用户猜出规律)
+    // dimIndex: 0=A, 1=B, 2=C, 3=D, 4=E, 5=F
+    const Statements = [
+        { q: "相比于解决眼前的具体困难，我更喜欢思考三年后甚至更长远的宏大趋势。", d: 0 },
+        { q: "只要是我认定的目标，就算过程再枯燥无聊，我也能像机器一样重复并坚持到底。", d: 1 },
+        { q: "我极度反感“因为大家都是这么做的，所以你也要这么做”这种毫无逻辑的废话。", d: 2 },
+        { q: "我拥有一双像素级的眼睛，常常能察觉到别人情绪或环境中最微小的细节变化。", d: 3 },
+        { q: "我的兴趣实在太广泛了，让我这辈子只干一个细分领域的工作，绝对会把我逼疯。", d: 4 },
+        { q: "遇到问题时，我习惯性地剥开所有表象，去寻找那个最根本的“底层逻辑”。", d: 5 },
+        
+        { q: "很多时候我能一眼看出事情的结果，但要是让我一步步写出推导过程，我会觉得很烦。", d: 0 },
+        { q: "我不相信别人画的大饼，我只看重实实在在的数据、证据和最终成果。", d: 1 },
+        { q: "我的脑子里经常冒出别人觉得“疯狂、危险甚至绝不可能”的想法。", d: 2 },
+        { q: "为了达成一个大目标，我非常有耐心，可以默默潜伏、收集信息很久很久。", d: 3 },
+        { q: "我经常把A领域的知识、爱好或经验，莫名其妙但又极其巧妙地用在B领域上。", d: 4 },
+        { q: "我在分析问题时极其理智，甚至有时会被别人评价为“冷血”或“缺乏人情味”。", d: 5 },
+
+        { q: "理论上的“不够完美”，比现实中造成的微小损失，更让我心里难受。", d: 0 },
+        { q: "面对巨大的挫折，我的第一反应通常不是崩溃，而是激发出冷酷的胜负欲。", d: 1 },
+        { q: "我常常觉得自己的思维跳跃太快，导致在人群中偶尔会有一种“没几个人能听懂我”的孤独感。", d: 2 },
+        { q: "我做决定非常谨慎，在没有收集到足够拼凑出真相的信息前，我绝不轻易表态。", d: 3 },
+        { q: "我认为理科的“严谨逻辑”和文科的“艺术美感”同样重要，缺一不可。", d: 4 },
+        { q: "我无法忍受事物处于含糊不清的状态，万事万物都必须有一个精确的因果关系。", d: 5 },
+
+        { q: "我脑子里经常进行“思想实验”，在脑海里把一件事推演完了，就感觉自己已经做过了。", d: 0 },
+        { q: "当我进入工作/学习的专注状态时，外界的声音我经常会完全听不见（心流状态）。", d: 1 },
+        { q: "规则在别人眼里是用来遵守的，在我眼里是用来寻找漏洞和打破的。", d: 2 },
+        { q: "我喜欢静静地观察，擅长从看似毫无关联的琐事中，揪出事物发展的底层规律。", d: 3 },
+        { q: "哪怕长大成人，我对这个世界依然保留着孩童般旺盛的好奇心。", d: 4 },
+        { q: "比起和一群人进行低效的社交闲聊，我更愿意独自呆在房间里解决一个复杂的难题。", d: 5 }
     ];
 
-    // 巴纳姆效应深度解析文案
-    const Archetypes = {
-        "Q1": { 
-            name: "【高维思考者】<br>阿尔伯特·爱因斯坦", 
-            tags: ["#降维打击", "#精神洁癖", "#极致理性", "#内核极其稳定"],
-            desc: "你其实比绝大多数人都要敏锐，只是你懒得将精力耗费在无意义的社交内耗上。你外表看起来可能有些冷淡或游离，但你的内心一直在构建一套极其严密的逻辑世界。你不在乎世俗的条条框框，你只臣服于真正的规则与智慧。你在人群中有一种清冷的旁观者气质。",
-            awaken: "尝试将你脑海中超前的想法，用普通人能听懂的语言翻译出来。当你的高维认知与现实产生连接时，你将拥有无与伦比的破局能力。",
-            trigger: "被人用充满逻辑漏洞的道德绑架来要求你；被强迫执行毫无意义的职场面子工程。"
-        },
-        "Q2": { 
-            name: "【灵魂潜行者】<br>卡尔·荣格", 
-            tags: ["#灵性直觉", "#共情大师", "#外柔内刚", "#精神捕手"],
-            desc: "很多时候你显得随和且好说话，但内心深处你有着极高的精神洁癖。你极其厌恶虚伪的人际关系，你的直觉能在一瞬间看透别人潜意识里的动机。你是一个温柔的观察者，总能在不动声色中疗愈他人，但也常常因为吸收了太多外界的情绪而感到疲惫。",
-            awaken: "学会建立能量结界。你的共情力是天赋，但不要过度为他人的人生负责。把多余的感受力投入到自我创作中，你会发光。",
-            trigger: "被人欺骗或背叛，尤其是在你已经看穿对方把戏的时候，对方还在你面前拙劣地表演。"
-        },
-        "Q3": { 
-            name: "【温柔提灯人】<br>玛丽·居里", 
-            tags: ["#人间清醒", "#极致韧性", "#现实守护者", "#大智若愚"],
-            desc: "外表看似温和甚至有时显得不争不抢的你，骨子里其实藏着常人难以企及的韧性和狠劲。你不喜欢高谈阔论，你只相信行动和结果。你习惯默默扛下很多事，经常把周围人的感受放在第一位，是一个能让人产生绝对安全感的“人间清醒”。",
-            awaken: "不要总是默默付出，学会展现你的攻击性。当你的善良带上锋芒，当你的执行力完全为自己服务时，你将不可战胜。",
-            trigger: "周围人只知道索取你的好，却把你的付出当作理所当然；做事完全不靠谱的猪队友不停拖你后腿。"
-        },
-        "Q4": { 
-            name: "【硬核破局者】<br>尼古拉·特斯拉", 
-            tags: ["#效率狂魔", "#绝对掌控", "#秩序重构", "#现实主义"],
-            desc: "你极其讨厌失控感和低效。你其实并不是没有感情，只是你习惯用“解决问题”来表达你的在乎。你的执行力极其恐怖，只要是你认准的目标，你会推平一切障碍去完成它。你天生就具有领导者的气场，极度厌恶别人给你画大饼。",
-            awaken: "偶尔允许自己“失控”一次。当你学会接纳生命中的混沌与不完美，并在极度紧绷的弦上留出一丝松弛感时，你的格局将再次跃升。",
-            trigger: "被人用陈旧死板的规矩束缚手脚；听到别人只知道抱怨却拿不出任何实际的解决反案。"
-        }
+    // 李克特量表选项
+    const scaleOptions = [
+        { t: "完全不符合", v: 1 },
+        { t: "比较不符合", v: 2 },
+        { t: "中立 / 都有点", v: 3 },
+        { t: "比较符合", v: 4 },
+        { t: "简直就是我", v: 5 }
+    ];
+
+    // 第25题 (命运锚点题)
+    const AnchorQ = {
+        q: "【终极测试】如果必须剥夺你的一项特质，你宁愿失去什么，也绝对要保留另一项？",
+        opts: [
+            { t: "宁愿失去安稳，也要保留自由探索的灵魂。", dx: 5, dy: 5 },
+            { t: "宁愿失去幻想，也要保留掌控现实的力量。", dx: -5, dy: -5 },
+            { t: "宁愿失去合群，也要保留看破真相的锐利。", dx: 5, dy: -5 },
+            { t: "宁愿失去规则，也要保留打破一切的灵感。", dx: -5, dy: 5 }
+        ]
     };
+
+    // 原型词典 (全面补全的巴纳姆文案)
+    const Archetypes = [
+        { 
+            name: "「剥离表象的宇宙观察者」<br>阿尔伯特·爱因斯坦", 
+            tags: ["#高维视角", "#长期主义", "#思想巨人", "#降维打击"],
+            desc: "你拥有极其罕见的“上帝视角”。当周围人还在为眼前的鸡毛蒜皮内耗时，你的大脑已经在推演三年后的终局。你对外表的冷淡只是因为你的精神世界太过宏大。你不在乎世俗的站队，只臣服于真理。",
+            trigger: "极其短视且自以为是的建议；被卷入低智的办公室或圈子政治；别人打断你深度的思考去处理琐事。",
+            awaken: "你的痛点是“容易飘在天上，眼高手低”。找一个极度务实的执行者作为搭档，把你的高维认知降维输出，变成世俗能理解的产品或内容，你将实现真正的财富与阶层跃迁。"
+        },
+        { 
+            name: "「不可战胜的极光行者」<br>玛丽·居里", 
+            tags: ["#绝对务实", "#死磕到底", "#秩序掌控", "#大女主内核"],
+            desc: "你是这个浮躁时代里极其稀缺的“绝对实干家”。你的韧性超越了99%的人，别人眼里的枯燥，对你来说是通向真理和财富的必经之路。你外表可能温和从容，但内核是一把极具锋芒的利刃——你从不迷信锦鲤和运气，你只相信自己的底牌、数据和汗水。",
+            trigger: "光说不练的画饼精；突如其来的变故打乱了你极其看重的秩序与计划；别人用“感情”、“道德”来绑架你做不符合逻辑的决定。",
+            awaken: "你的执行力无可挑剔，但你最大的内耗来源于“事必躬亲的紧绷感”。试着练习课题分离，脱离一下紧绷的轨道去接触一些看似“无用”的跨界领域。当你学会放松对细节的绝对掌控时，你的全局观会直接跃升。"
+        },
+        { 
+            name: "「打破世俗的清醒孤勇者」<br>尼古拉·特斯拉", 
+            tags: ["#高维灵感", "#混沌破局", "#极客精神", "#逆向思维"],
+            desc: "你是一个自带极客光环的“未来人”。你的智商和直觉双高，灵魂里写满了反叛基因。在平庸的人群里，你偶尔会显得格格不入，那是因为你的思维总是超前他们三个版本。一旦你找到热爱的事物，你身上那种近乎偏执的专注力，足以对所在领域进行“降维打击”。",
+            trigger: "遇到逻辑稀碎还要硬杠的人，连解释的欲望都没有；为了形式而走流程的繁文缛节；别人用世俗的标签（如年龄、性别）来给你的人生设限。",
+            awaken: "你现在最大的瓶颈往往不是能力不足，而是“想法太多，落地太少”。你需要一个能帮你处理琐碎执行细节和人情世故的系统或合伙人。不要试图去迎合大众，让大众来追赶你。"
+        },
+        { 
+            name: "「看透一切的绝对洞察者」<br>查尔斯·达尔文", 
+            tags: ["#像素级眼光", "#谋定后动", "#微观系统", "#极度克制"],
+            desc: "你是人群中最安静但也最危险的猎手。你拥有极其恐怖的耐心和细节捕捉能力。别人的一句无心之言、一个微表情，都能被你拼凑出背后的真相。你从不打无准备之仗，一旦出手，必定是一击致命。",
+            trigger: "被极其没有边界感的人强行套近乎；被逼迫在没有收集足够信息时立刻做出重大决定；遇到全靠情绪输出、毫无逻辑的沟通对象。",
+            awaken: "你的内耗往往来自于“过度收集信息导致的决策瘫痪”。试着在只有70%把握的时候就果断按下发射键。允许偶尔的失控，在战争中学习战争，你的进化速度会呈指数级爆发。"
+        },
+        { 
+            name: "「无界限的全息创世者」<br>列奥纳多·达·芬奇", 
+            tags: ["#跨界天才", "#美学与逻辑", "#无限潜能", "#灵感核弹"],
+            desc: "你是一个永远无法被单目标签定义的“多面体”。你的灵魂里同时住着绝对理性的工程师和极度感性的艺术家。你能极其精妙地把不同领域的知识缝合在一起，创造出让人惊叹的火花。你对世界永远保持着孩童般的饥饿感。",
+            trigger: "被逼着在体制内做极其机械重复的工作；被长辈或领导教育“你要踏踏实实专注做一件普通的事”；审美极其俗气的事物。",
+            awaken: "你的致命伤是“三分钟热度，挖了无数个坑却没填完”。你需要建立一个强大的“第二大脑”来管理灵感，并强迫自己完成商业闭环。只要你能把三个不同的技能修炼到前20%，叠加起来你就是绝对的唯一。"
+        },
+        { 
+            name: "「绝对理性的底层架构师」<br>艾萨克·牛顿", 
+            tags: ["#第一性原理", "#冷酷判官", "#探寻本质", "#精密大脑"],
+            desc: "你的大脑就是一台极其精密的计算器。你有着极度强烈的“刨根问底”强迫症，不被任何权威或表象迷惑，直击事物的核心骨架。在别人眼里你可能有些冷酷、不近人情，那是因为在你的世界里，对错与规律远比廉价的情绪重要。",
+            trigger: "朝令夕改、极其模糊不清的任务指令；遇到遇到事情只会哭诉却不想办法解决的巨婴；在毫无意义的争吵中浪费算力。",
+            awaken: "你极度依赖逻辑，但这恰恰是你的盲区——因为“真实的人性本就是非逻辑的”。试着把“他人的情绪”当成一个数学变量加入你的计算公式中。当你学会了向下兼容，披上一层温和的伪装，你将不可阻挡。"
+        }
+    ];
 
     function startTest() {
         const input = document.getElementById('pwd').value.trim();
         if(input !== VALID_PWD) {
-            alert("密钥无效。请使用专属内部通道密钥哦。");
+            alert("密钥无效。请获取正确的内部访问通道密钥。");
             return;
         }
         document.getElementById('view-login').classList.remove('active');
@@ -379,38 +285,55 @@
         renderQ();
     }
 
-    const letters = ['A','B','C','D','E'];
     function renderQ() {
-        if(currQ >= QData.length) {
-            startLoading();
-            return;
+        if(currQ < 24) {
+            // 前24题李克特量表
+            document.getElementById('q-num').innerText = `心智图谱绘制 ${String(currQ+1).padStart(2,'0')} / 25`;
+            document.getElementById('q-text').innerText = Statements[currQ].q;
+            document.getElementById('progress-fill').style.width = `${(currQ/25)*100}%`;
+            
+            const box = document.getElementById('opts-box');
+            box.innerHTML = '';
+            scaleOptions.forEach(opt => {
+                const div = document.createElement('div');
+                div.className = 'scale-opt';
+                div.innerText = opt.t;
+                div.onclick = () => {
+                    scores[Statements[currQ].d] += opt.v; // 加分到对应维度
+                    currQ++;
+                    renderQ();
+                };
+                box.appendChild(div);
+            });
+        } else if (currQ === 24) {
+            // 第25题锚点题
+            document.getElementById('q-num').innerText = `终极命运锚点 25 / 25`;
+            document.getElementById('q-text').innerText = AnchorQ.q;
+            document.getElementById('progress-fill').style.width = `100%`;
+            
+            const box = document.getElementById('opts-box');
+            box.innerHTML = '';
+            AnchorQ.opts.forEach((opt, idx) => {
+                const letters = ['A', 'B', 'C', 'D'];
+                const div = document.createElement('div');
+                div.className = 'scale-opt anchor-opt';
+                div.innerHTML = `<span style="color:var(--neon-cyan);font-weight:bold;margin-right:10px;">${letters[idx]}.</span>${opt.t}`;
+                div.onclick = () => {
+                    coordMod.x = opt.dx;
+                    coordMod.y = opt.dy;
+                    currQ++;
+                    startLoading();
+                };
+                box.appendChild(div);
+            });
         }
-        document.getElementById('q-num').innerText = `潜意识扫描 ${String(currQ+1).padStart(2,'0')} / 25`;
-        document.getElementById('q-text').innerText = QData[currQ].q;
-        
-        const box = document.getElementById('opts-box');
-        box.innerHTML = '';
-        QData[currQ].o.forEach((opt, idx) => {
-            const div = document.createElement('div');
-            div.className = 'option';
-            div.innerHTML = `<span class="opt-letter">${letters[idx]}</span> <span>${opt[0]}</span>`;
-            div.onclick = () => {
-                for(let i=0; i<5; i++) totalScore.radar[i] += opt[1][i];
-                totalScore.coord.x += opt[1][5];
-                totalScore.coord.y += opt[1][6];
-                currQ++;
-                renderQ();
-            };
-            box.appendChild(div);
-        });
     }
 
     function startLoading() {
         document.getElementById('view-quiz').classList.remove('active');
         document.getElementById('view-loading').classList.add('active');
         
-        // 更贴近专业测试的真实话术，去科幻感
-        const msgs = ["正在整合行为特征数据...", "正在交叉比对决策逻辑...", "提取多维人格特质...", "生成专属心智图谱..."];
+        const msgs = ["正在解构第一性原理...", "提取多维人格矩阵...", "正在写入雷达映射点...", "匹配历史高维心智图谱..."];
         let mIdx = 0;
         const msgEl = document.getElementById('loading-msg');
         const timer = setInterval(() => {
@@ -429,15 +352,14 @@
         document.getElementById('view-loading').classList.remove('active');
         document.getElementById('view-result').classList.add('active');
 
-        let quad = "Q1";
-        const x = totalScore.coord.x;
-        const y = totalScore.coord.y;
-        if(x >= 0 && y >= 0) quad = "Q1"; 
-        if(x < 0 && y >= 0) quad = "Q2";  
-        if(x < 0 && y < 0) quad = "Q3";   
-        if(x >= 0 && y < 0) quad = "Q4";  
+        // 1. 寻找最高分维度作为主原型
+        let maxIndex = 0;
+        let maxScore = -1;
+        for(let i=0; i<6; i++) {
+            if(scores[i] > maxScore) { maxScore = scores[i]; maxIndex = i; }
+        }
 
-        const arc = Archetypes[quad];
+        const arc = Archetypes[maxIndex];
         document.getElementById('res-name').innerHTML = arc.name;
         document.getElementById('res-desc').innerHTML = arc.desc;
         document.getElementById('res-awaken').innerHTML = arc.awaken;
@@ -445,14 +367,20 @@
         
         const tagsBox = document.getElementById('res-tags');
         tagsBox.innerHTML = '';
-        arc.tags.forEach(t => {
-            tagsBox.innerHTML += `<span class="tag">${t}</span>`;
-        });
+        arc.tags.forEach(t => { tagsBox.innerHTML += `<span class="tag">${t}</span>`; });
 
-        // 坐标系点渲染
-        let limit = 50; 
-        let px = ((x + limit) / (limit * 2)) * 100;
-        let py = ((limit - y) / (limit * 2)) * 100; 
+        // 2. 二维坐标计算 (严格按照用户给的公式)
+        // A=0, B=1, C=2, D=3, E=4, F=5
+        // X轴 = (A + E) - (B + D) + 锚点X
+        // Y轴 = (C + E) - (D + F) + 锚点Y
+        let xVal = (scores[0] + scores[4]) - (scores[1] + scores[3]) + coordMod.x;
+        let yVal = (scores[2] + scores[4]) - (scores[3] + scores[5]) + coordMod.y;
+
+        // 映射到坐标系 15% 到 85% 区间内 (理论极值大约是 ±45，这里设 limit 为 45)
+        let limit = 45; 
+        let px = ((xVal + limit) / (limit * 2)) * 100;
+        let py = ((limit - yVal) / (limit * 2)) * 100; // Y轴网页向下为正，需要反转
+        
         px = Math.max(15, Math.min(px, 85));
         py = Math.max(15, Math.min(py, 85));
         setTimeout(()=>{
@@ -460,35 +388,30 @@
             document.getElementById('c-dot').style.top = `${py}%`;
         }, 600);
 
-        // --- 雷达图视觉平滑算法 ---
-        // 核心：使用 Data Normalization，把极其悬殊的分数映射到 [60, 100] 区间
-        // 这样图形永远是一个多边形，既能看出偏科倾向，又绝对好看饱满
-        const maxVal = Math.max(...totalScore.radar, 1);
-        const mappedData = totalScore.radar.map(v => {
-            let ratio = v / maxVal;
-            // 最低分也会给到60%的面积展示，最高分是100%
-            return Math.round(60 + ratio * 40); 
+        // 3. 6维雷达图平滑算法
+        // 映射到 40% - 100% 之间，保证图形极其漂亮，不会出现针尖
+        const mappedData = scores.map(v => {
+            return Math.round(40 + (v / 20) * 60); 
         });
         drawRadar(mappedData);
     }
 
     function drawRadar(data) {
         const ctx = document.getElementById('radarChart').getContext('2d');
-        Chart.defaults.font.family = '-apple-system, "PingFang SC", sans-serif';
-        Chart.defaults.color = '#888';
+        Chart.defaults.font.family = '-apple-system, sans-serif';
 
         new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: ['绝对逻辑', '精神直觉', '现实行动', '深度共情', '秩序构建'],
+                labels: ['高维构建', '绝对死磕', '逆向破局', '微观洞察', '跨界发散', '第一性原理'],
                 datasets: [{
                     data: data,
-                    backgroundColor: 'rgba(200, 122, 106, 0.15)', // 降低一点填充透明度显得更高级
-                    borderColor: '#C87A6A',
+                    backgroundColor: 'rgba(0, 240, 255, 0.2)',
+                    borderColor: '#00F0FF',
                     borderWidth: 2,
-                    pointBackgroundColor: '#FFF',
-                    pointBorderColor: '#C87A6A',
-                    pointBorderWidth: 2,
+                    pointBackgroundColor: '#B026FF',
+                    pointBorderColor: '#FFF',
+                    pointBorderWidth: 1.5,
                     pointRadius: 4
                 }]
             },
@@ -498,10 +421,9 @@
                 animation: { duration: 0 }, 
                 scales: {
                     r: {
-                        angleLines: { color: 'rgba(0,0,0,0.06)' },
-                        grid: { color: 'rgba(0,0,0,0.06)' },
-                        pointLabels: { font: { size: 12, weight: '700' }, color: '#666' },
-                        // 强制写死0-100，配合上面的[60-100]映射算法
+                        angleLines: { color: 'rgba(255,255,255,0.1)' },
+                        grid: { color: 'rgba(255,255,255,0.1)', circular: true },
+                        pointLabels: { font: { size: 11, weight: 'bold' }, color: '#E2E8F0' },
                         ticks: { display: false, min: 0, max: 100 }
                     }
                 },
@@ -512,7 +434,7 @@
 
     function saveImg() {
         const btn = document.getElementById('btn-save');
-        btn.innerText = "正在生成，请保持在当前页面...";
+        btn.innerText = "数据拓扑渲染中...";
         btn.style.opacity = "0.7";
         
         window.scrollTo(0,0);
@@ -521,18 +443,18 @@
         html2canvas(target, {
             scale: window.devicePixelRatio * 2,
             useCORS: true,
-            backgroundColor: "#FFFFFF"
+            backgroundColor: "#0A0D14"
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `我的人格原理解析.png`;
+            link.download = `我的内在科学家原型.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
             
-            btn.innerText = "✨ 已保存！快去小红书发帖吧";
-            btn.style.background = "var(--green)";
+            btn.innerText = "✨ 已保存至相册，可直接发布";
+            btn.style.background = "linear-gradient(135deg, #10B981, #059669)";
             
             setTimeout(() => {
-                btn.innerText = "一键生成专属图文海报";
+                btn.innerText = "一键生成专属雷达名片";
                 btn.style.background = "";
                 btn.style.opacity = "1";
             }, 3000);
