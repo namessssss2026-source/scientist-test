@@ -4,17 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>深度内在原型剖析：你的灵魂科学家</title>
+    <!-- 引入图表库 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 引入一键生成图片库 (html2canvas) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --bg-color: #FDFBF7; /* 奶油暖白底色 */
             --panel-bg: #FFFFFF;
-            --text-main: #4A4036; /* 咖色/深棕色文字，比纯黑高级 */
+            --text-main: #4A4036; /* 咖色/深棕色文字 */
             --text-muted: #9BA4B5;
-            --accent: #C1A073; /* 香槟金/燕麦色 */
+            --accent: #C1A073; /* 香槟金 */
             --accent-light: #F4EFE6; /* 极浅的燕麦色背景 */
             --border: #EAE1D8;
-            --error: #E06C75; /* 柔和的红色 */
+            --error: #E06C75; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,6 +45,7 @@
             margin-bottom: 5vh;
             border: 1px solid rgba(255,255,255,0.8);
             animation: fadeIn 0.8s ease-out;
+            position: relative; /* 截图时需要 */
         }
 
         @keyframes fadeIn {
@@ -49,7 +53,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 顶部标题排版 */
         h1 { font-size: 22px; text-align: center; font-weight: 600; letter-spacing: 1px; color: var(--text-main); margin-bottom: 6px; }
         .subtitle { font-size: 12px; color: var(--accent); text-align: center; margin-bottom: 35px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500;}
 
@@ -60,29 +63,27 @@
         input[type="text"] {
             width: 100%; background: var(--bg-color); border: 1.5px solid var(--border);
             color: var(--text-main); padding: 16px; border-radius: 12px;
-            font-size: 18px; text-align: center; letter-spacing: 2px;
-            outline: none; transition: all 0.3s ease;
+            font-size: 18px; text-align: center; letter-spacing: 2px; outline: none; transition: all 0.3s ease;
         }
         input[type="text"]:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 10px rgba(193, 160, 115, 0.1); }
         input[type="text"]::placeholder { color: #D1C8C0; font-size: 14px; letter-spacing: 1px; }
         
-        /* 震动动画 */
         .shake { animation: shakeError 0.4s ease-in-out; border-color: var(--error) !important; color: var(--error) !important; }
-        @keyframes shakeError {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
-        }
+        @keyframes shakeError { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
 
         .error-msg { color: var(--error); font-size: 13px; min-height: 20px; margin-bottom: 20px; opacity: 0; transition: opacity 0.3s; }
         .error-msg.show { opacity: 1; }
 
+        /* 按钮通用样式 */
         .btn {
-            width: 100%; background: var(--text-main); color: #fff;
-            border: none; padding: 16px; border-radius: 12px; font-size: 15px; font-weight: 500;
-            cursor: pointer; transition: 0.3s; margin-bottom: 20px; letter-spacing: 1px;
+            width: 100%; background: var(--text-main); color: #fff; border: none; padding: 16px; 
+            border-radius: 12px; font-size: 15px; font-weight: 500; cursor: pointer; 
+            transition: 0.3s; margin-bottom: 20px; letter-spacing: 1px;
         }
         .btn:hover { background: var(--accent); }
+        .btn-outline { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+        .btn-outline:hover { background: var(--accent-light); color: var(--text-main); border-color: var(--accent); }
+        
         .disclaimer { font-size: 11px; color: #B3AAA0; text-align: justify; line-height: 1.8; margin-top: 30px; border-top: 1px dashed var(--border); padding-top: 20px;}
 
         /* 测试页 */
@@ -91,13 +92,20 @@
         .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; border-radius: 4px;}
         .progress-text { font-size: 12px; color: var(--accent); text-align: right; margin-bottom: 30px; font-weight: 500; letter-spacing: 1px;}
         .question { font-size: 17px; font-weight: 600; margin-bottom: 25px; line-height: 1.6; color: var(--text-main); }
-        
         .option {
-            background: var(--bg-color); border: 1.5px solid var(--border);
-            padding: 16px 20px; border-radius: 12px; margin-bottom: 12px; cursor: pointer;
-            transition: all 0.2s; font-size: 14px; color: var(--text-main); line-height: 1.5;
+            background: var(--bg-color); border: 1.5px solid var(--border); padding: 16px 20px; 
+            border-radius: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; 
+            font-size: 14px; color: var(--text-main); line-height: 1.5;
         }
         .option:hover, .option:active { background: var(--accent-light); border-color: var(--accent); transform: translateY(-2px); }
+
+        /* 演算等待动画页 */
+        #loading-screen { display: none; text-align: center; padding: 40px 10px; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 15px var(--accent); } 100% { transform: scale(1); opacity: 0.8; } }
+        .spinner-box { width: 100%; height: 6px; background: var(--accent-light); border-radius: 4px; overflow: hidden; margin: 35px 0 15px; }
+        .spinner-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s linear; border-radius: 4px; }
+        .loading-text { font-size: 16px; color: var(--text-main); font-weight: 600; margin-top: 20px; transition: opacity 0.3s;}
+        .loading-subtext { font-size: 12px; color: var(--text-muted); }
 
         /* 结果页 */
         #result-screen { display: none; }
@@ -125,12 +133,15 @@
         .match-item h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; font-weight: normal; }
         .match-item span { font-size: 14px; color: var(--text-main); font-weight: 600; }
         
-        .watermark { font-size: 11px; color: #D1C8C0; text-align: center; margin-top: 30px; letter-spacing: 1px;}
+        .action-buttons { display: flex; gap: 12px; margin-top: 20px; flex-direction: column; }
+        .action-buttons .btn { margin-bottom: 0; }
+        
+        .watermark { font-size: 11px; color: #D1C8C0; text-align: center; margin-top: 30px; letter-spacing: 1px; padding-bottom: 10px;}
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="capture-area">
     <!-- 登录页 -->
     <div id="login-screen">
         <div class="login-illustration">✧</div>
@@ -158,6 +169,14 @@
         <div id="options-container"></div>
     </div>
 
+    <!-- 演算动画页 -->
+    <div id="loading-screen">
+        <div class="login-illustration" style="animation: pulse 1.5s infinite;">✦</div>
+        <div class="loading-text" id="loading-status">正在连接潜意识深层数据...</div>
+        <div class="spinner-box"><div class="spinner-fill" id="spinner-fill"></div></div>
+        <div class="loading-subtext">基于非线性动力学模型，多维比对中</div>
+    </div>
+
     <!-- 结果页 -->
     <div id="result-screen">
         <div class="report-header">
@@ -176,7 +195,7 @@
 
         <div class="section-title">深度人格解剖档案</div>
         <div class="desc-box" id="scientist-desc">
-            <!-- 动态注入，分点解析 -->
+            <!-- 动态注入 -->
         </div>
 
         <div class="section-title">六维潜能雷达图</div>
@@ -196,18 +215,21 @@
             </div>
         </div>
 
-        <button class="btn" onclick="location.reload()" style="margin-top: 10px;">保存报告并退出</button>
+        <!-- 功能按钮区 (截图时会自动隐藏) -->
+        <div class="action-buttons" id="action-btns">
+            <button class="btn" onclick="downloadImage()">💾 保存专属分析报告 (生成高清图)</button>
+            <button class="btn btn-outline" onclick="location.reload()">重新校准坐标</button>
+        </div>
+
         <div class="watermark">测评档案编号: <span id="random-id"></span><br>© 心理学自我探索实验室</div>
     </div>
 </div>
 
 <script>
-    // 固定的长密码
+    // 固定长密码
     const VALID_PASSCODE = "K9F2X7R4V1M8"; 
 
-    // 小红书向：20道题，每题4个选项，场景贴近生活/职场/感情/自我内耗
-    // X轴 (dx): 负=逻辑理性，正=直觉感性
-    // Y轴 (dy): 负=内心/精神/理论，正=行动/现实/结果
+    // 20道题
     const questions = [
         { q: "周末突然遇到极度心烦的突发状况，你下意识的平替方案是？", options: [
             { t: "A. 立刻拿出备忘录，列出清晰的解决步骤。", dx: -2, dy: 2 },
@@ -335,7 +357,6 @@
     let scoreX = 0; 
     let scoreY = 0; 
 
-    // 输入框动态格式化
     document.getElementById('passcode').addEventListener('input', function (e) {
         document.getElementById('error-msg').classList.remove('show');
         document.getElementById('passcode').classList.remove('shake');
@@ -345,7 +366,6 @@
         e.target.value = value;
     });
 
-    // 验证逻辑
     function checkPasscode() {
         const inputField = document.getElementById('passcode');
         const errorMsg = document.getElementById('error-msg');
@@ -368,10 +388,10 @@
         if (e.key === 'Enter') checkPasscode();
     });
 
-    // 加载问题
     function loadQuestion() {
         if(currentQ >= questions.length) {
-            showResult();
+            // 所有问题答完，进入"加载/演算"动画环节
+            startLoadingAnimation();
             return;
         }
         
@@ -390,15 +410,50 @@
                 scoreX += opt.dx;
                 scoreY += opt.dy;
                 currentQ++;
-                setTimeout(loadQuestion, 150); // 微弱延迟显得自然
+                setTimeout(loadQuestion, 150); 
             };
             container.appendChild(div);
         });
     }
 
-    // 小红书向的结果分析库
-    function showResult() {
+    // 新增：沉浸式演算加载动画
+    function startLoadingAnimation() {
         document.getElementById('test-screen').style.display = 'none';
+        document.getElementById('loading-screen').style.display = 'block';
+        window.scrollTo(0, 0);
+
+        let progress = 0;
+        const fill = document.getElementById('spinner-fill');
+        const statusText = document.getElementById('loading-status');
+        
+        // 动态加载文案
+        const loadingTexts = [
+            "正在提取六维能力潜意识数据...",
+            "运算认知拓扑系坐标系...",
+            "多维比对荣格潜意识人格模型...",
+            "正在生成专属高维解析报告..."
+        ];
+
+        // 定时器模拟进度
+        const interval = setInterval(() => {
+            progress += 1.2; // 控制进度条速度
+            fill.style.width = Math.min(progress, 100) + '%';
+            
+            if (progress > 20 && progress < 50) statusText.innerText = loadingTexts[1];
+            else if (progress >= 50 && progress < 85) statusText.innerText = loadingTexts[2];
+            else if (progress >= 85) statusText.innerText = loadingTexts[3];
+
+            if (progress >= 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    showResult(); // 动画结束，展示真实结果
+                }, 500);
+            }
+        }, 40); // 约耗时 3.5 秒
+    }
+
+    function showResult() {
         document.getElementById('result-screen').style.display = 'block';
         window.scrollTo(0, 0);
 
@@ -497,74 +552,65 @@
         const tagsHTML = profile.tags.map(tag => `<span class="tag"># ${tag}</span>`).join('');
         document.getElementById('tags-container').innerHTML = tagsHTML;
 
-        // 图表基础颜色适应浅色主题
         Chart.defaults.color = '#8C7B6B';
         Chart.defaults.font.family = "'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif";
 
-        // 散点图
         const ctxScatter = document.getElementById('scatterChart').getContext('2d');
         new Chart(ctxScatter, {
             type: 'scatter',
-            data: {
-                datasets: [{
-                    label: '你的认知落点',
-                    data: [{ x: scoreX, y: scoreY }],
-                    backgroundColor: '#C1A073',
-                    borderColor: '#fff',
-                    borderWidth: 2,
-                    pointRadius: 8,
-                    pointHoverRadius: 10
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                scales: {
-                    x: {
-                        min: -40, max: 40,
-                        grid: { color: (ctx) => ctx.tick.value === 0 ? '#EAE1D8' : '#f7f4f0', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
-                    },
-                    y: {
-                        min: -40, max: 40,
-                        grid: { color: (ctx) => ctx.tick.value === 0 ? '#EAE1D8' : '#f7f4f0', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
-                    }
-                }
-            }
+            data: { datasets: [{ label: '你的认知落点', data: [{ x: scoreX, y: scoreY }], backgroundColor: '#C1A073', borderColor: '#fff', borderWidth: 2, pointRadius: 8, pointHoverRadius: 10 }] },
+            options: { responsive: true, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { min: -40, max: 40, grid: { color: (ctx) => ctx.tick.value === 0 ? '#EAE1D8' : '#f7f4f0', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 } }, y: { min: -40, max: 40, grid: { color: (ctx) => ctx.tick.value === 0 ? '#EAE1D8' : '#f7f4f0', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 } } } }
         });
 
-        // 随机小波动
         const randomize = (val) => Math.min(100, Math.max(10, val + Math.floor(Math.random() * 10) - 5));
         const finalRadar = profile.radar.map(randomize);
 
-        // 雷达图
         const ctxRadar = document.getElementById('radarChart').getContext('2d');
         new Chart(ctxRadar, {
             type: 'radar',
             data: {
                 labels: ['逻辑推演', '现实落地', '灵感顿悟', '精神内耗', '打破常规', '情绪共情'],
-                datasets: [{
-                    label: '能力维度',
-                    data: finalRadar,
-                    backgroundColor: 'rgba(193, 160, 115, 0.2)', // 燕麦金半透明
-                    borderColor: '#C1A073',
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#C1A073',
-                    borderWidth: 2,
-                }]
+                datasets: [{ data: finalRadar, backgroundColor: 'rgba(193, 160, 115, 0.2)', borderColor: '#C1A073', pointBackgroundColor: '#fff', pointBorderColor: '#C1A073', borderWidth: 2 }]
             },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    r: {
-                        angleLines: { color: '#EAE1D8' },
-                        grid: { color: '#EAE1D8' },
-                        pointLabels: { color: '#5C5248', font: { size: 12, weight: '500' } },
-                        ticks: { display: false, min: 0, max: 100 }
-                    }
-                }
-            }
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { r: { angleLines: { color: '#EAE1D8' }, grid: { color: '#EAE1D8' }, pointLabels: { color: '#5C5248', font: { size: 12, weight: '500' } }, ticks: { display: false, min: 0, max: 100 } } } }
         });
+    }
+
+    // 新增：一键保存为高清长图的功能
+    function downloadImage() {
+        const captureArea = document.getElementById('capture-area');
+        const actionBtns = document.getElementById('action-btns');
+        const originalBtnText = actionBtns.children[0].innerText;
+
+        // 1. 修改按钮文字提示正在生成
+        actionBtns.children[0].innerText = "正在生成高清原图，请稍候...";
+        
+        // 2. 为了保证截图完美，短暂隐藏底部不需要的按钮
+        setTimeout(() => {
+            actionBtns.style.display = 'none';
+
+            // 3. 调用 html2canvas 截图整个容器
+            html2canvas(captureArea, {
+                scale: 2, // 2倍超清分辨率，发朋友圈不糊
+                backgroundColor: "#FDFBF7", // 强制底色防止透明黑边
+                useCORS: true 
+            }).then(canvas => {
+                // 4. 恢复按钮显示
+                actionBtns.style.display = 'flex';
+                actionBtns.children[0].innerText = originalBtnText;
+
+                // 5. 触发浏览器下载
+                const link = document.createElement('a');
+                link.download = `潜意识分析报告_${document.getElementById('random-id').innerText}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            }).catch(err => {
+                console.error("生成图片失败", err);
+                actionBtns.style.display = 'flex';
+                actionBtns.children[0].innerText = originalBtnText;
+                alert("由于浏览器限制保存失败，您可以直接手机截图保存本页。");
+            });
+        }, 300); // 留一点时间让浏览器重绘隐藏按钮
     }
 </script>
 
