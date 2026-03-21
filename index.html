@@ -3,93 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>高阶心智解析：你的六维科学家原型</title>
+    <title>深层心智解析：你的内在科学家原型</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* 极致的暗黑极客/星空蓝视觉风格 */
+        /* 极致小红书审美：燕麦色系 + 卡片式治愈排版 */
         :root {
-            --bg-deep: #0A0D14;
-            --card-bg: #141824;
-            --neon-cyan: #00F0FF;
-            --neon-purple: #B026FF;
-            --text-main: #E2E8F0;
-            --text-muted: #828B9C;
-            --border-color: rgba(0, 240, 255, 0.15);
+            --bg-color: #F9F7F3; 
+            --primary: #C87A6A; /* 高级陶土红 */
+            --text-dark: #3D3D3D; 
+            --text-light: #9B9B9B;
+            --card-bg: #FFFFFF;
+            --tag-bg: #F2EFE9;
+            --green: #82A08F;
+            --alert-red: #D26969;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-deep); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-dark); min-height: 100vh; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 480px; min-height: 100vh; position: relative; padding: 20px; display: flex; flex-direction: column; overflow-x: hidden; }
         
-        .view { display: none; width: 100%; flex: 1; flex-direction: column; animation: fadeIn 0.5s ease forwards; opacity: 0; }
+        .view { display: none; width: 100%; flex: 1; flex-direction: column; animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
         .view.active { display: flex; }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(10px); } }
 
         /* 卡片与通用UI */
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 30px 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); margin-bottom: 20px; position: relative; overflow: hidden; }
-        .title { font-size: 24px; font-weight: 800; text-align: center; color: #FFF; margin-bottom: 8px; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,240,255,0.3); }
-        .subtitle { font-size: 12px; text-align: center; color: var(--neon-cyan); margin-bottom: 24px; letter-spacing: 2px; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 30px 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        .title { font-size: 24px; font-weight: 700; text-align: center; color: var(--primary); margin-bottom: 8px; letter-spacing: 1px; }
+        .subtitle { font-size: 13px; text-align: center; color: var(--text-light); margin-bottom: 24px; letter-spacing: 2px; }
         
-        input[type="text"] { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); padding: 16px; border-radius: 12px; font-size: 15px; text-align: center; margin-bottom: 20px; color: #FFF; outline: none; transition: 0.3s; letter-spacing: 1px;}
-        input[type="text"]:focus { border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+        input[type="text"] { width: 100%; background: #F9F7F3; border: 1px solid transparent; padding: 16px; border-radius: 12px; font-size: 15px; text-align: center; margin-bottom: 20px; color: var(--text-dark); outline: none; transition: 0.3s; letter-spacing: 1px;}
+        input[type="text"]:focus { border-color: var(--primary); background: #FFF; box-shadow: 0 4px 12px rgba(200, 122, 106, 0.1); }
         
-        .btn { width: 100%; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); color: white; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: bold; letter-spacing: 1px; cursor: pointer; transition: 0.2s; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-        .btn:active { transform: scale(0.98); }
+        .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: 0.2s; box-shadow: 0 6px 16px rgba(200, 122, 106, 0.25); }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px 6px rgba(200, 122, 106, 0.25); }
 
         /* 问答页专有UI */
-        .progress-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--neon-cyan); width: 0%; transition: width 0.3s ease; }
-        .q-meta { font-size: 12px; color: var(--neon-purple); font-weight: bold; margin-bottom: 15px; letter-spacing: 1px; }
-        .question-text { font-size: 18px; line-height: 1.6; margin-bottom: 30px; font-weight: 600; text-align: justify; color: #FFF; }
+        .progress-bar { width: 100%; height: 4px; background: rgba(0,0,0,0.05); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease; }
+        .q-meta { font-size: 12px; color: var(--text-light); font-weight: bold; margin-bottom: 15px; letter-spacing: 1px; text-align: center; }
+        .question-text { font-size: 17px; line-height: 1.6; margin-bottom: 30px; font-weight: 600; text-align: justify; color: var(--text-dark); }
         
-        /* 李克特量表选项样式 */
-        .scale-opt { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 16px 20px; border-radius: 14px; margin-bottom: 12px; font-size: 15px; cursor: pointer; transition: all 0.2s; text-align: center; font-weight: 500; }
-        .scale-opt:active { background: rgba(0, 240, 255, 0.1); border-color: var(--neon-cyan); }
-        .anchor-opt { text-align: left; line-height: 1.5; padding: 18px; } /* 锚点题特殊样式 */
+        /* 李克特量表选项样式 (适配亮色手帐风) */
+        .scale-opt { background: var(--bg-color); border: 1px solid transparent; padding: 16px 20px; border-radius: 14px; margin-bottom: 12px; font-size: 15px; cursor: pointer; transition: all 0.2s; text-align: center; font-weight: 500; color: #555; }
+        .scale-opt:active { background: #EFECE3; border-color: var(--primary); transform: scale(0.98); }
+        .anchor-opt { text-align: justify; line-height: 1.5; padding: 18px; text-align: left; }
 
         /* Loading */
         .loading-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; }
-        .spinner { width: 50px; height: 50px; border: 3px solid rgba(0,240,255,0.1); border-top-color: var(--neon-cyan); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
+        .spinner { width: 44px; height: 44px; border: 4px solid #EFECE3; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { font-size: 14px; color: var(--neon-cyan); letter-spacing: 2px; height: 20px; }
+        .loading-text { font-size: 14px; color: var(--text-dark); letter-spacing: 1px; font-weight: 500; height: 20px; transition: opacity 0.3s; }
 
-        /* --- 极客风生成海报页 --- */
-        #poster { background: #0F131F; border-radius: 20px; padding: 30px 20px; position: relative; border: 1px solid #1A233A; }
-        .poster-bg { position: absolute; top:0; left:0; right:0; bottom:0; background: radial-gradient(circle at top right, rgba(176,38,255,0.05), transparent 50%), radial-gradient(circle at bottom left, rgba(0,240,255,0.05), transparent 50%); z-index: 0; pointer-events: none; border-radius: 20px; }
+        /* --- 海报生成页 (小红书高颜值排版) --- */
+        #poster { background: var(--card-bg); border-radius: 20px; padding: 30px 20px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.04); }
         
-        .user-info { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; position: relative; z-index: 1; }
-        .pre-title { font-size: 12px; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; }
-        .res-name { font-size: 26px; font-weight: 900; color: #FFF; margin-bottom: 15px; text-align: center; line-height: 1.4; text-shadow: 0 0 15px rgba(0,240,255,0.4); }
+        .user-info { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        .pre-title { font-size: 12px; color: var(--text-light); letter-spacing: 1px; margin-bottom: 6px; }
+        .res-name { font-size: 26px; font-weight: 900; color: var(--primary); margin-bottom: 10px; text-align: center; line-height: 1.3; text-shadow: 0 2px 4px rgba(200,122,106,0.1); }
         
         .tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 25px; }
-        .tag { background: rgba(0,240,255,0.1); color: var(--neon-cyan); border: 1px solid rgba(0,240,255,0.2); font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: bold; letter-spacing: 1px;}
+        .tag { background: var(--tag-bg); color: var(--text-dark); font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600; letter-spacing: 0.5px;}
         
-        .section-title { font-size: 14px; font-weight: bold; color: #FFF; margin: 35px 0 15px 0; display: flex; align-items: center; position: relative; z-index: 1; }
-        .section-title::before { content: ""; width: 4px; height: 14px; background: var(--neon-purple); border-radius: 2px; margin-right: 8px; box-shadow: 0 0 8px var(--neon-purple); }
+        .section-title { font-size: 15px; font-weight: 800; color: var(--text-dark); margin: 30px 0 15px 0; display: flex; align-items: center; justify-content: center; }
+        .section-title::before, .section-title::after { content: ""; width: 20px; height: 1px; background: #ddd; margin: 0 10px; }
         
-        .chart-box { width: 100%; aspect-ratio: 1.1; position: relative; margin-bottom: 10px; z-index: 1; }
+        .chart-box { width: 100%; aspect-ratio: 1.1; position: relative; margin-bottom: 10px; }
         
-        /* 二维坐标系 (暗黑极客风) */
-        .coord-box { width: 100%; max-width: 260px; height: 260px; margin: 0 auto 20px auto; background: rgba(0,0,0,0.2); border-radius: 12px; position: relative; border: 1px solid rgba(255,255,255,0.05); z-index: 1; }
-        .c-axis-x { position: absolute; top: 50%; left: 5%; right: 5%; height: 1px; background: rgba(255,255,255,0.1); }
-        .c-axis-y { position: absolute; left: 50%; top: 5%; bottom: 5%; width: 1px; background: rgba(255,255,255,0.1); }
-        .c-label { position: absolute; font-size: 10px; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; }
-        .c-top { top: 6px; left: 50%; transform: translateX(-50%); }
-        .c-bottom { bottom: 6px; left: 50%; transform: translateX(-50%); }
-        .c-left { left: 6px; top: 50%; transform: translateY(-50%); }
-        .c-right { right: 6px; top: 50%; transform: translateY(-50%); }
-        .c-dot { position: absolute; width: 12px; height: 12px; background: var(--neon-cyan); border-radius: 50%; box-shadow: 0 0 12px var(--neon-cyan); transform: translate(-50%, -50%); z-index: 2; }
+        /* 二维坐标系 (极简灰白) */
+        .coord-box { width: 100%; max-width: 250px; height: 250px; margin: 0 auto 20px auto; background: #FCFAED; border-radius: 16px; position: relative; border: 1px solid #EAE6D8; }
+        .c-axis-x { position: absolute; top: 50%; left: 8%; right: 8%; height: 1px; background: #D5D0C5; }
+        .c-axis-y { position: absolute; left: 50%; top: 8%; bottom: 8%; width: 1px; background: #D5D0C5; }
+        .c-label { position: absolute; font-size: 10px; color: #999; font-weight: 500; }
+        .c-top { top: 4px; left: 50%; transform: translateX(-50%); }
+        .c-bottom { bottom: 4px; left: 50%; transform: translateX(-50%); }
+        .c-left { left: 4px; top: 50%; transform: translateY(-50%); }
+        .c-right { right: 4px; top: 50%; transform: translateY(-50%); }
+        .c-dot { position: absolute; width: 14px; height: 14px; background: var(--primary); border-radius: 50%; border: 2px solid #fff; transform: translate(-50%, -50%); box-shadow: 0 2px 6px rgba(200,122,106,0.4); z-index: 2; }
         
         /* 文案区 */
-        .commentary { font-size: 14px; line-height: 1.8; color: var(--text-main); text-align: justify; margin-bottom: 25px; padding: 0 5px; position: relative; z-index: 1; }
+        .commentary { font-size: 14px; line-height: 1.8; color: #444; text-align: justify; margin-bottom: 25px; padding: 0 10px; }
         
-        .insight-box { border-radius: 12px; padding: 18px; margin-bottom: 15px; font-size: 13px; line-height: 1.6; text-align: justify; position: relative; z-index: 1; border: 1px solid; }
-        .insight-box.trigger { background: rgba(255, 50, 50, 0.05); border-color: rgba(255, 50, 50, 0.2); border-left: 4px solid #FF3232; color: #FCA5A5; }
-        .insight-box.awaken { background: rgba(0, 240, 255, 0.05); border-color: rgba(0, 240, 255, 0.2); border-left: 4px solid var(--neon-cyan); color: #A5F3FC; }
-        .insight-title { font-weight: bold; margin-bottom: 10px; font-size: 14px; display: flex; align-items: center; color: #FFF; }
+        .insight-box { border-radius: 12px; padding: 18px; margin-bottom: 15px; font-size: 13px; line-height: 1.6; text-align: justify; border: 1px solid transparent;}
+        .insight-box.trigger { background: #FEF3F3; border-left: 4px solid var(--alert-red); color: #5C2C2C; }
+        .insight-box.awaken { background: #F0F6F2; border-left: 4px solid var(--green); color: #2C4A3A; }
+        .insight-title { font-weight: 800; margin-bottom: 8px; font-size: 14px; display: flex; align-items: center; }
         
-        .footer-disclaimer { text-align: center; margin-top: 40px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 20px; position: relative; z-index: 1; }
-        .disclaim-text { font-size: 10px; color: #666; line-height: 1.6; letter-spacing: 0.5px; }
+        .footer-disclaimer { text-align: center; margin-top: 35px; border-top: 1px dashed #E5E5E5; padding-top: 20px; }
+        .disclaim-text { font-size: 10px; color: #B3B3B3; line-height: 1.6; letter-spacing: 0.5px; }
 
     </style>
 </head>
@@ -99,18 +99,18 @@
     <div id="view-login" class="view active card" style="margin: auto 0;">
         <h1 class="title" style="margin-top: 10px;">深层人格原型剖析</h1>
         <div class="subtitle">寻找你潜意识里的高阶科学家</div>
-        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 30px; text-align: justify; line-height: 1.8; padding: 0 5px;">
-            这是一场基于「第一性原理」与「行为动力学」的专业人格测评。包含24道深层行为映射题与1道命运锚点题。<br><br>
-            ⚠️ 警告：请放弃社交伪装，凭绝对的第一直觉作答。
+        <p style="font-size: 14px; color: #666; margin-bottom: 30px; text-align: justify; line-height: 1.8; padding: 0 10px;">
+            这是一场基于「第一性原理」与「行为动力学」的专业人格测评。包含24道深层映射题与1道命运锚点题。<br><br>
+            ⚠️ 请放弃所有社交伪装，凭绝对的第一直觉作答。
         </p>
         <input type="text" id="pwd" placeholder="请输入专属访问密钥解锁" autocomplete="off">
-        <button class="btn" onclick="startTest()">启动神经元链接</button>
+        <button class="btn" onclick="startTest()">启动内在探索</button>
     </div>
 
     <div id="view-quiz" class="view">
         <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
         <div class="card" style="flex:1;">
-            <div class="q-meta" id="q-num">数据采集 01 / 25</div>
+            <div class="q-meta" id="q-num">潜意识解析 01 / 25</div>
             <div class="question-text" id="q-text">加载中...</div>
             <div id="opts-box"></div>
         </div>
@@ -125,8 +125,6 @@
 
     <div id="view-result" class="view">
         <div id="poster">
-            <div class="poster-bg"></div>
-            
             <div class="user-info">
                 <div class="pre-title">经核心算法检测，你的内在原型是</div>
                 <div class="res-name" id="res-name">加载中...</div>
@@ -152,7 +150,7 @@
                 <div id="res-trigger">...</div>
             </div>
             <div class="insight-box awaken">
-                <div class="insight-title">🚀 进阶破局指南（财富/认知跃迁）</div>
+                <div class="insight-title">✨ 进阶破局指南（财富/认知跃迁）</div>
                 <div id="res-awaken">...</div>
             </div>
 
@@ -164,7 +162,7 @@
                 </div>
             </div>
         </div>
-        <button class="btn" style="margin-top:20px;" onclick="saveImg()" id="btn-save">一键生成专属雷达名片</button>
+        <button class="btn" style="margin-top:20px;" onclick="saveImg()" id="btn-save">一键生成专属图文海报</button>
     </div>
 </div>
 
@@ -176,7 +174,7 @@
     let coordMod = {x: 0, y: 0}; // 第25题的坐标修正
     let currQ = 0;
 
-    // 前24题题库 (严格按维度分配，每维4题，顺序已打乱以防用户猜出规律)
+    // 前24题题库 (严格按维度分配，每维4题)
     // dimIndex: 0=A, 1=B, 2=C, 3=D, 4=E, 5=F
     const Statements = [
         { q: "相比于解决眼前的具体困难，我更喜欢思考三年后甚至更长远的宏大趋势。", d: 0 },
@@ -208,7 +206,7 @@
         { q: "比起和一群人进行低效的社交闲聊，我更愿意独自呆在房间里解决一个复杂的难题。", d: 5 }
     ];
 
-    // 李克特量表选项
+    // 李克特量表
     const scaleOptions = [
         { t: "完全不符合", v: 1 },
         { t: "比较不符合", v: 2 },
@@ -219,7 +217,7 @@
 
     // 第25题 (命运锚点题)
     const AnchorQ = {
-        q: "【终极测试】如果必须剥夺你的一项特质，你宁愿失去什么，也绝对要保留另一项？",
+        q: "【终极锚点】如果必须剥夺你的一项特质，你宁愿失去什么，也绝对要保留另一项？",
         opts: [
             { t: "宁愿失去安稳，也要保留自由探索的灵魂。", dx: 5, dy: 5 },
             { t: "宁愿失去幻想，也要保留掌控现实的力量。", dx: -5, dy: -5 },
@@ -228,21 +226,21 @@
         ]
     };
 
-    // 原型词典 (全面补全的巴纳姆文案)
+    // 科学家文案 (高智感+大女主/清醒搞钱)
     const Archetypes = [
         { 
             name: "「剥离表象的宇宙观察者」<br>阿尔伯特·爱因斯坦", 
             tags: ["#高维视角", "#长期主义", "#思想巨人", "#降维打击"],
             desc: "你拥有极其罕见的“上帝视角”。当周围人还在为眼前的鸡毛蒜皮内耗时，你的大脑已经在推演三年后的终局。你对外表的冷淡只是因为你的精神世界太过宏大。你不在乎世俗的站队，只臣服于真理。",
             trigger: "极其短视且自以为是的建议；被卷入低智的办公室或圈子政治；别人打断你深度的思考去处理琐事。",
-            awaken: "你的痛点是“容易飘在天上，眼高手低”。找一个极度务实的执行者作为搭档，把你的高维认知降维输出，变成世俗能理解的产品或内容，你将实现真正的财富与阶层跃迁。"
+            awaken: "你的痛点是“容易飘在天上，眼高手低”。找一个极度务实的执行者作为搭档，把你的高维认知降维输出，变成世俗能理解的产品或内容，你将实现真正的阶层跃迁。"
         },
         { 
             name: "「不可战胜的极光行者」<br>玛丽·居里", 
             tags: ["#绝对务实", "#死磕到底", "#秩序掌控", "#大女主内核"],
             desc: "你是这个浮躁时代里极其稀缺的“绝对实干家”。你的韧性超越了99%的人，别人眼里的枯燥，对你来说是通向真理和财富的必经之路。你外表可能温和从容，但内核是一把极具锋芒的利刃——你从不迷信锦鲤和运气，你只相信自己的底牌、数据和汗水。",
             trigger: "光说不练的画饼精；突如其来的变故打乱了你极其看重的秩序与计划；别人用“感情”、“道德”来绑架你做不符合逻辑的决定。",
-            awaken: "你的执行力无可挑剔，但你最大的内耗来源于“事必躬亲的紧绷感”。试着练习课题分离，脱离一下紧绷的轨道去接触一些看似“无用”的跨界领域。当你学会放松对细节的绝对掌控时，你的全局观会直接跃升。"
+            awaken: "你的执行力无可挑剔，但你最大的内耗来源于“事必躬亲的紧绷感”。试着练习课题分离，偶尔脱离紧绷的轨道去接触一些看似“无用”的跨界领域。放下对细节的绝对掌控，你的全局观会直接跃升。"
         },
         { 
             name: "「打破世俗的清醒孤勇者」<br>尼古拉·特斯拉", 
@@ -287,7 +285,6 @@
 
     function renderQ() {
         if(currQ < 24) {
-            // 前24题李克特量表
             document.getElementById('q-num').innerText = `心智图谱绘制 ${String(currQ+1).padStart(2,'0')} / 25`;
             document.getElementById('q-text').innerText = Statements[currQ].q;
             document.getElementById('progress-fill').style.width = `${(currQ/25)*100}%`;
@@ -299,14 +296,13 @@
                 div.className = 'scale-opt';
                 div.innerText = opt.t;
                 div.onclick = () => {
-                    scores[Statements[currQ].d] += opt.v; // 加分到对应维度
+                    scores[Statements[currQ].d] += opt.v; 
                     currQ++;
                     renderQ();
                 };
                 box.appendChild(div);
             });
         } else if (currQ === 24) {
-            // 第25题锚点题
             document.getElementById('q-num').innerText = `终极命运锚点 25 / 25`;
             document.getElementById('q-text').innerText = AnchorQ.q;
             document.getElementById('progress-fill').style.width = `100%`;
@@ -317,7 +313,7 @@
                 const letters = ['A', 'B', 'C', 'D'];
                 const div = document.createElement('div');
                 div.className = 'scale-opt anchor-opt';
-                div.innerHTML = `<span style="color:var(--neon-cyan);font-weight:bold;margin-right:10px;">${letters[idx]}.</span>${opt.t}`;
+                div.innerHTML = `<span style="color:var(--primary);font-weight:900;margin-right:12px;font-size:16px;">${letters[idx]}.</span>${opt.t}`;
                 div.onclick = () => {
                     coordMod.x = opt.dx;
                     coordMod.y = opt.dy;
@@ -352,7 +348,7 @@
         document.getElementById('view-loading').classList.remove('active');
         document.getElementById('view-result').classList.add('active');
 
-        // 1. 寻找最高分维度作为主原型
+        // 1. 寻找最高分维度
         let maxIndex = 0;
         let maxScore = -1;
         for(let i=0; i<6; i++) {
@@ -369,17 +365,13 @@
         tagsBox.innerHTML = '';
         arc.tags.forEach(t => { tagsBox.innerHTML += `<span class="tag">${t}</span>`; });
 
-        // 2. 二维坐标计算 (严格按照用户给的公式)
-        // A=0, B=1, C=2, D=3, E=4, F=5
-        // X轴 = (A + E) - (B + D) + 锚点X
-        // Y轴 = (C + E) - (D + F) + 锚点Y
+        // 2. 二维坐标计算公式 (X/Y Axis)
         let xVal = (scores[0] + scores[4]) - (scores[1] + scores[3]) + coordMod.x;
         let yVal = (scores[2] + scores[4]) - (scores[3] + scores[5]) + coordMod.y;
 
-        // 映射到坐标系 15% 到 85% 区间内 (理论极值大约是 ±45，这里设 limit 为 45)
         let limit = 45; 
         let px = ((xVal + limit) / (limit * 2)) * 100;
-        let py = ((limit - yVal) / (limit * 2)) * 100; // Y轴网页向下为正，需要反转
+        let py = ((limit - yVal) / (limit * 2)) * 100; // Y轴需要反转
         
         px = Math.max(15, Math.min(px, 85));
         py = Math.max(15, Math.min(py, 85));
@@ -388,8 +380,7 @@
             document.getElementById('c-dot').style.top = `${py}%`;
         }, 600);
 
-        // 3. 6维雷达图平滑算法
-        // 映射到 40% - 100% 之间，保证图形极其漂亮，不会出现针尖
+        // 3. 6维雷达图平滑算法 (映射到 40% - 100%)
         const mappedData = scores.map(v => {
             return Math.round(40 + (v / 20) * 60); 
         });
@@ -398,7 +389,7 @@
 
     function drawRadar(data) {
         const ctx = document.getElementById('radarChart').getContext('2d');
-        Chart.defaults.font.family = '-apple-system, sans-serif';
+        Chart.defaults.font.family = '-apple-system, "PingFang SC", sans-serif';
 
         new Chart(ctx, {
             type: 'radar',
@@ -406,12 +397,12 @@
                 labels: ['高维构建', '绝对死磕', '逆向破局', '微观洞察', '跨界发散', '第一性原理'],
                 datasets: [{
                     data: data,
-                    backgroundColor: 'rgba(0, 240, 255, 0.2)',
-                    borderColor: '#00F0FF',
+                    backgroundColor: 'rgba(200, 122, 106, 0.15)', // 治愈系陶土红半透明
+                    borderColor: '#C87A6A',
                     borderWidth: 2,
-                    pointBackgroundColor: '#B026FF',
-                    pointBorderColor: '#FFF',
-                    pointBorderWidth: 1.5,
+                    pointBackgroundColor: '#FFF',
+                    pointBorderColor: '#C87A6A',
+                    pointBorderWidth: 2,
                     pointRadius: 4
                 }]
             },
@@ -421,9 +412,9 @@
                 animation: { duration: 0 }, 
                 scales: {
                     r: {
-                        angleLines: { color: 'rgba(255,255,255,0.1)' },
-                        grid: { color: 'rgba(255,255,255,0.1)', circular: true },
-                        pointLabels: { font: { size: 11, weight: 'bold' }, color: '#E2E8F0' },
+                        angleLines: { color: 'rgba(0,0,0,0.06)' },
+                        grid: { color: 'rgba(0,0,0,0.06)' },
+                        pointLabels: { font: { size: 11, weight: 'bold' }, color: '#666' },
                         ticks: { display: false, min: 0, max: 100 }
                     }
                 },
@@ -443,18 +434,18 @@
         html2canvas(target, {
             scale: window.devicePixelRatio * 2,
             useCORS: true,
-            backgroundColor: "#0A0D14"
+            backgroundColor: "#FFFFFF"
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `我的内在科学家原型.png`;
+            link.download = `我的科学家原型图谱.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
             
             btn.innerText = "✨ 已保存至相册，可直接发布";
-            btn.style.background = "linear-gradient(135deg, #10B981, #059669)";
+            btn.style.background = "var(--green)";
             
             setTimeout(() => {
-                btn.innerText = "一键生成专属雷达名片";
+                btn.innerText = "一键生成专属图文海报";
                 btn.style.background = "";
                 btn.style.opacity = "1";
             }, 3000);
