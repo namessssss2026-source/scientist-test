@@ -7,13 +7,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #0f172a; /* 深邃夜空蓝 */
+            --bg-color: #0f172a; 
             --panel-bg: rgba(30, 41, 59, 0.7);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent: #fbbf24; /* 高级金 */
+            --accent: #fbbf24; 
             --accent-glow: rgba(251, 191, 36, 0.3);
             --border: rgba(255, 255, 255, 0.1);
+            --error: #ef4444; /* 错误提示红 */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,7 +27,7 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* 改为顶部对齐，方便滚动 */
+            align-items: flex-start;
             padding: 20px;
             line-height: 1.6;
             overflow-x: hidden;
@@ -57,7 +58,7 @@
 
         /* 登录页 */
         #login-screen { text-align: center; }
-        .input-group { margin: 30px 0; }
+        .input-group { margin: 20px 0 10px 0; }
         input[type="text"] {
             width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
             color: var(--accent); padding: 16px; border-radius: 12px;
@@ -65,6 +66,19 @@
             outline: none; transition: 0.3s;
         }
         input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        
+        /* 震动动画(密码错误时触发) */
+        .shake { animation: shakeError 0.4s ease-in-out; border-color: var(--error) !important; color: var(--error) !important; }
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        /* 错误提示文字 */
+        .error-msg { color: var(--error); font-size: 13px; min-height: 20px; margin-bottom: 20px; opacity: 0; transition: opacity 0.3s; }
+        .error-msg.show { opacity: 1; }
+
         .btn {
             width: 100%; background: var(--text-main); color: var(--bg-color);
             border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: bold;
@@ -120,8 +134,11 @@
         
         <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;">请输入您的12位系统授权密钥</div>
         <div class="input-group">
-            <input type="text" id="passcode" placeholder="XXXX-XXXX-XXXX" maxlength="14">
+            <input type="text" id="passcode" placeholder="XXXX-XXXX-XXXX" maxlength="14" autocomplete="off">
         </div>
+        <!-- 新增的内嵌错误提示区 -->
+        <div class="error-msg" id="error-msg">⚠️ 系统警告：授权密钥无效或已过期</div>
+        
         <button class="btn" onclick="checkPasscode()">解密我的潜意识坐标</button>
         
         <div class="disclaimer">
@@ -182,10 +199,12 @@
 
 <script>
     // ---------------------------------------------------------
-    // 核心密钥设置 (发给客户的就是这个，必须是这12个字符)
+    // 核心密钥设置：这个是你发给客户的密码。
+    // 客户输入时可以带横杠，也可以不带，大小写均可。
     // ---------------------------------------------------------
     const VALID_PASSCODE = "K9F2X7R4V1M8"; 
 
+    // 题库
     const questions = [
         { q: "面对一个几乎无解的烂摊子，你潜意识的第一反应是：", options: [
             { t: "寻找线头，把它拆解成无数个可控的小模块。", dx: -2, dy: 0 },
@@ -243,4 +262,237 @@
             { t: "极致的绝对理性和冷酷的数学计算。", dx: -2, dy: -1 },
             { t: "人类灵魂深处不可磨灭的灵感与奇迹创造力。", dx: 2, dy: 1 }
         ]},
-        { q: "假如你可以选择一张单程票穿越
+        { q: "假如你可以选择一张单程票穿越时空，你会去：", options: [
+            { t: "高度秩序化、由超级AI统治的赛博未来。", dx: -1, dy: 1 },
+            { t: "充满神秘色彩、物理法则可能失效的多维宇宙。", dx: 2, dy: -1 }
+        ]}
+    ];
+
+    let currentQ = 0;
+    let scoreX = 0; 
+    let scoreY = 0; 
+
+    // 输入框动态格式化 (自动加横杠)
+    document.getElementById('passcode').addEventListener('input', function (e) {
+        // 每次输入时隐藏报错提示
+        document.getElementById('error-msg').classList.remove('show');
+        document.getElementById('passcode').classList.remove('shake');
+
+        let value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+        if (value.length > 4) value = value.slice(0, 4) + '-' + value.slice(4);
+        if (value.length > 9) value = value.slice(0, 9) + '-' + value.slice(9);
+        e.target.value = value;
+    });
+
+    // 检查密码核心逻辑
+    function checkPasscode() {
+        const inputField = document.getElementById('passcode');
+        const errorMsg = document.getElementById('error-msg');
+        
+        // 无论用户怎么输入，剥离掉横杠和空格，全部转大写进行对比
+        const cleanInput = inputField.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+
+        if (cleanInput === VALID_PASSCODE) { 
+            // 密码正确，隐藏登录页，进入测试页
+            errorMsg.classList.remove('show');
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('test-screen').style.display = 'block';
+            loadQuestion();
+        } else {
+            // 密码错误，触发红字报错和震动动画
+            errorMsg.classList.add('show');
+            
+            // 移除再添加shake类，为了让动画可以重复触发
+            inputField.classList.remove('shake');
+            void inputField.offsetWidth; // 触发DOM重绘
+            inputField.classList.add('shake');
+        }
+    }
+
+    // 监听键盘回车键，按回车也能直接登录
+    document.getElementById('passcode').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            checkPasscode();
+        }
+    });
+
+    // 加载问题
+    function loadQuestion() {
+        if(currentQ >= questions.length) {
+            showResult();
+            return;
+        }
+        
+        const percent = ((currentQ) / questions.length) * 100;
+        document.getElementById('progress-fill').style.width = percent + '%';
+        document.getElementById('progress-text').innerText = `DATA SYNC: ${currentQ + 1} / ${questions.length}`;
+        
+        document.getElementById('question-text').innerText = questions[currentQ].q;
+        
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        questions[currentQ].options.forEach(opt => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            div.innerText = opt.t;
+            div.onclick = () => {
+                scoreX += opt.dx;
+                scoreY += opt.dy;
+                currentQ++;
+                setTimeout(loadQuestion, 150);
+            };
+            container.appendChild(div);
+        });
+    }
+
+    // 显示结果
+    function showResult() {
+        document.getElementById('test-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        window.scrollTo(0, 0);
+
+        document.getElementById('random-id').innerText = Math.random().toString(36).substr(2, 8).toUpperCase();
+
+        let profile = {};
+        let radarData = []; 
+
+        if (scoreX <= 0 && scoreY > 0) {
+            profile = {
+                name: "玛丽·居里 (Marie Curie)",
+                title: "现实炼金术士 · The Alchemist",
+                quote: "“弱者坐待时机，强者制造时机。”",
+                tags: ["死磕到底", "实干家", "结果导向", "钢铁意志"],
+                desc: `
+                    <p><strong>【核心驱动力】</strong> 你是一个极其罕见的「高维逻辑 × 极致实干」结合体。你不相信虚无缥缈的大饼，只相信经过汗水和时间淬炼出的真实数据。别人在空想，而你已经在动手把泥土变成黄金。你的专注力犹如激光切刀，能够忍受常人无法忍受的枯燥。</p>
+                    <p><strong>【人格暗面】</strong> 过度的现实主义让你有时显得冷漠不近人情。你极度讨厌“蠢人”和“低效”，在团队中容易成为严苛的暴君。由于习惯把一切扛在肩上，你极易陷入长期的过劳状态而不自知。</p>
+                    <p><strong>【破局建议】</strong> 允许世界有“灰度”和“无意义”。试着把一部分信任分担给他人，哪怕他们没有你做得完美。适当的放空不是浪费时间，而是为你极高强度的执行力进行系统散热。</p>
+                `,
+                soulmate: "牛顿 (绝对秩序官)",
+                nemesis: "爱因斯坦 (量子织梦者)",
+                radar: [95, 98, 40, 60, 30, 45]
+            };
+        } else if (scoreX <= 0 && scoreY <= 0) {
+            profile = {
+                name: "艾萨克·牛顿 (Isaac Newton)",
+                title: "绝对秩序官 · The Architect",
+                quote: "“真理永远在简单的深处，不在繁杂的表象。”",
+                tags: ["底层逻辑", "降维打击", "高冷智性", "战略家"],
+                desc: `
+                    <p><strong>【核心驱动力】</strong> 你是「纯粹理性 × 深度抽象」的化身。你的大脑是一台极其精密的量子计算机，生来就是为了看破世间万物运行的底层法则。你对“混乱”有着生理上的厌恶，热衷于在精神世界构建起庞大、严密、无懈可击的真理帝国。</p>
+                    <p><strong>【人格暗面】</strong> 极度的理性让你带有某种“神性”的傲慢。在你的评价体系里，大部分人类的情感拉扯都是低效且无意义的。你容易陷入社交隔离，成为别人眼中高冷、难以接近的异类孤岛。</p>
+                    <p><strong>【破局建议】</strong> 降维兼容。尝试理解“人类的情绪本身也是一种客观数据”。学会使用温和的社交面具，这将大大减少你推行你那天才理论时的现实阻力。</p>
+                `,
+                soulmate: "居里夫人 (现实炼金术士)",
+                nemesis: "特斯拉 (狂热造物主)",
+                radar: [100, 50, 60, 95, 20, 30]
+            };
+        } else if (scoreX > 0 && scoreY > 0) {
+            profile = {
+                name: "尼古拉·特斯拉 (Nikola Tesla)",
+                title: "狂热造物主 · The Promethean",
+                quote: "“我不在乎他们偷了我的想法，我在乎他们没有自己的想法。”",
+                tags: ["颠覆式创新", "疯批美人", "灵感爆棚", "打破规则"],
+                desc: `
+                    <p><strong>【核心驱动力】</strong> 欢迎来到「狂野直觉 × 现实重构」的频道！你是一个彻头彻尾的浪漫主义极客。你的脑子里装满了能闪瞎常人的疯狂点子，并且你有极其强烈的冲动要把它们变成现实。你极具个人魅力，像一道难以捕捉的交流电，只要让你找到插座，你就能点亮整个世界。</p>
+                    <p><strong>【人格暗面】</strong> 极度缺乏耐心和持久力。你热衷于“从0到1”的刺激开局，却极度厌恶“从1到100”的枯燥维护。因为思维太跳跃，常人很难跟上你的节奏，导致你容易有一种“生不逢时”的怀才不遇感。</p>
+                    <p><strong>【破局建议】</strong> 找一个靠谱的“居里夫人”型合伙人。你需要有人帮你把天马行空的想法落地成世俗的标准。克制住不停开新坑的欲望，把至少一件事做到绝对的闭环。</p>
+                `,
+                soulmate: "爱因斯坦 (量子织梦者)",
+                nemesis: "牛顿 (绝对秩序官)",
+                radar: [40, 85, 95, 45, 100, 60]
+            };
+        } else {
+            profile = {
+                name: "阿尔伯特·爱因斯坦 (Albert Einstein)",
+                title: "量子织梦者 · The Dreamer",
+                quote: "“想象力比知识更重要，因为知识是有限的。”",
+                tags: ["脑洞大开", "十一维度", "哲思者", "纯真孩童"],
+                desc: `
+                    <p><strong>【核心驱动力】</strong> 你的灵魂徘徊在「终极直觉 × 深度抽象」的象限。你的肉体生活在三维空间，但你的思想早已飞升。相比于枯燥的实验数据，你更相信直觉带来的“神启”。你拥有一种孩童般的好奇心，不屑于世俗的争斗，只关心宇宙和人性的终极答案。</p>
+                    <p><strong>【人格暗面】</strong> 严重的“落地困难症”。你可以在脑海中推演出宇宙大爆炸的几万种可能，却常常忘记今天中午该吃什么、账单该怎么付。你容易活在自己构建的理想国里，逃避现实生活的一地鸡毛。</p>
+                    <p><strong>【破局建议】</strong> 设立“地球锚点”。建立最基础的日常纪律（哪怕只是按时作息），这不会抹杀你的灵气，反而能保护你不被现实的琐碎击垮。你的思想已经是武器，只需一点点现实的弹药。</p>
+                `,
+                soulmate: "特斯拉 (狂热造物主)",
+                nemesis: "居里夫人 (现实炼金术士)",
+                radar: [50, 20, 100, 95, 80, 85]
+            };
+        }
+
+        document.getElementById('scientist-name').innerText = profile.name + " | " + profile.title;
+        document.getElementById('scientist-quote').innerText = profile.quote;
+        document.getElementById('scientist-desc').innerHTML = profile.desc;
+        document.getElementById('soulmate').innerText = profile.soulmate;
+        document.getElementById('nemesis').innerText = profile.nemesis;
+
+        const tagsHTML = profile.tags.map(tag => `<span class="tag">#${tag}</span>`).join('');
+        document.getElementById('tags-container').innerHTML = tagsHTML;
+
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+
+        const ctxScatter = document.getElementById('scatterChart').getContext('2d');
+        new Chart(ctxScatter, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: '潜意识落点',
+                    data: [{ x: scoreX, y: scoreY }],
+                    backgroundColor: '#fbbf24',
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    pointRadius: 8,
+                    pointHoverRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: {
+                    x: {
+                        min: -20, max: 20,
+                        grid: { color: (ctx) => ctx.tick.value === 0 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
+                    },
+                    y: {
+                        min: -20, max: 20,
+                        grid: { color: (ctx) => ctx.tick.value === 0 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
+                    }
+                }
+            }
+        });
+
+        const randomize = (val) => Math.min(100, Math.max(10, val + Math.floor(Math.random() * 10) - 5));
+        const finalRadar = profile.radar.map(randomize);
+
+        const ctxRadar = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['逻辑分析', '落地执行', '直觉顿悟', '理论抽象', '规则破坏', '感性共情'],
+                datasets: [{
+                    label: '能力维度',
+                    data: finalRadar,
+                    backgroundColor: 'rgba(251, 191, 36, 0.2)',
+                    borderColor: '#fbbf24',
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#fbbf24',
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255,255,255,0.1)' },
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        pointLabels: { color: '#cbd5e1', font: { size: 12 } },
+                        ticks: { display: false, min: 0, max: 100 }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
