@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高维认知拓扑图谱：你的内在科学家原型</title>
+    <title>深度内在原型剖析：你的灵魂科学家</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #0f172a; 
-            --panel-bg: rgba(30, 41, 59, 0.7);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #fbbf24; 
-            --accent-glow: rgba(251, 191, 36, 0.3);
-            --border: rgba(255, 255, 255, 0.1);
-            --error: #ef4444; /* 错误提示红 */
+            --bg-color: #FDFBF7; /* 奶油暖白底色 */
+            --panel-bg: #FFFFFF;
+            --text-main: #4A4036; /* 咖色/深棕色文字，比纯黑高级 */
+            --text-muted: #9BA4B5;
+            --accent: #C1A073; /* 香槟金/燕麦色 */
+            --accent-light: #F4EFE6; /* 极浅的燕麦色背景 */
+            --border: #EAE1D8;
+            --error: #E06C75; /* 柔和的红色 */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, transparent 70%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -30,126 +29,131 @@
             align-items: flex-start;
             padding: 20px;
             line-height: 1.6;
-            overflow-x: hidden;
         }
 
         .container {
             width: 100%;
-            max-width: 540px;
+            max-width: 500px;
             background: var(--panel-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
             border-radius: 24px;
             padding: 40px 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            margin-top: 2vh;
+            box-shadow: 0 15px 35px rgba(160, 150, 140, 0.1);
+            margin-top: 3vh;
             margin-bottom: 5vh;
+            border: 1px solid rgba(255,255,255,0.8);
             animation: fadeIn 0.8s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h1 { font-size: 24px; text-align: center; font-weight: 600; letter-spacing: 2px; margin-bottom: 8px; color: var(--accent); }
-        .subtitle { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 40px; letter-spacing: 1px; }
+        /* 顶部标题排版 */
+        h1 { font-size: 22px; text-align: center; font-weight: 600; letter-spacing: 1px; color: var(--text-main); margin-bottom: 6px; }
+        .subtitle { font-size: 12px; color: var(--accent); text-align: center; margin-bottom: 35px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500;}
 
         /* 登录页 */
         #login-screen { text-align: center; }
+        .login-illustration { font-size: 40px; margin-bottom: 20px; color: var(--accent); }
         .input-group { margin: 20px 0 10px 0; }
         input[type="text"] {
-            width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
-            color: var(--accent); padding: 16px; border-radius: 12px;
-            font-size: 18px; text-align: center; letter-spacing: 3px; font-family: monospace;
-            outline: none; transition: 0.3s;
+            width: 100%; background: var(--bg-color); border: 1.5px solid var(--border);
+            color: var(--text-main); padding: 16px; border-radius: 12px;
+            font-size: 18px; text-align: center; letter-spacing: 2px;
+            outline: none; transition: all 0.3s ease;
         }
-        input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        input[type="text"]:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 10px rgba(193, 160, 115, 0.1); }
+        input[type="text"]::placeholder { color: #D1C8C0; font-size: 14px; letter-spacing: 1px; }
         
-        /* 震动动画(密码错误时触发) */
+        /* 震动动画 */
         .shake { animation: shakeError 0.4s ease-in-out; border-color: var(--error) !important; color: var(--error) !important; }
         @keyframes shakeError {
             0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-8px); }
-            40%, 80% { transform: translateX(8px); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
         }
 
-        /* 错误提示文字 */
         .error-msg { color: var(--error); font-size: 13px; min-height: 20px; margin-bottom: 20px; opacity: 0; transition: opacity 0.3s; }
         .error-msg.show { opacity: 1; }
 
         .btn {
-            width: 100%; background: var(--text-main); color: var(--bg-color);
-            border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: bold;
+            width: 100%; background: var(--text-main); color: #fff;
+            border: none; padding: 16px; border-radius: 12px; font-size: 15px; font-weight: 500;
             cursor: pointer; transition: 0.3s; margin-bottom: 20px; letter-spacing: 1px;
         }
         .btn:hover { background: var(--accent); }
-        .disclaimer { font-size: 11px; color: #64748b; text-align: justify; line-height: 1.8; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 20px;}
+        .disclaimer { font-size: 11px; color: #B3AAA0; text-align: justify; line-height: 1.8; margin-top: 30px; border-top: 1px dashed var(--border); padding-top: 20px;}
 
         /* 测试页 */
         #test-screen { display: none; }
-        .progress-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 30px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
-        .progress-text { font-size: 12px; color: var(--text-muted); text-align: right; margin-top: -20px; margin-bottom: 20px; font-family: monospace;}
-        .question { font-size: 19px; font-weight: 500; margin-bottom: 30px; line-height: 1.5; }
+        .progress-bar { width: 100%; height: 6px; background: var(--accent-light); border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; border-radius: 4px;}
+        .progress-text { font-size: 12px; color: var(--accent); text-align: right; margin-bottom: 30px; font-weight: 500; letter-spacing: 1px;}
+        .question { font-size: 17px; font-weight: 600; margin-bottom: 25px; line-height: 1.6; color: var(--text-main); }
+        
         .option {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            padding: 18px 20px; border-radius: 12px; margin-bottom: 15px; cursor: pointer;
-            transition: all 0.2s; font-size: 15px; display: flex; align-items: center;
+            background: var(--bg-color); border: 1.5px solid var(--border);
+            padding: 16px 20px; border-radius: 12px; margin-bottom: 12px; cursor: pointer;
+            transition: all 0.2s; font-size: 14px; color: var(--text-main); line-height: 1.5;
         }
-        .option:hover, .option:active { background: rgba(251, 191, 36, 0.1); border-color: var(--accent); transform: translateX(5px); }
+        .option:hover, .option:active { background: var(--accent-light); border-color: var(--accent); transform: translateY(-2px); }
 
         /* 结果页 */
         #result-screen { display: none; }
-        .report-header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
-        .result-title { font-size: 28px; color: var(--accent); font-weight: bold; margin: 10px 0; letter-spacing: 2px;}
-        .result-subtitle { font-size: 16px; color: var(--text-main); font-weight: 300; letter-spacing: 1px; }
+        .report-header { text-align: center; margin-bottom: 30px; border-bottom: 1px dashed var(--border); padding-bottom: 25px; }
+        .result-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 5px; }
+        .result-title { font-size: 26px; color: var(--accent); font-weight: bold; margin: 10px 0; letter-spacing: 1px;}
+        .quote { font-size: 13px; color: #8C7B6B; font-style: italic; margin-top: 10px; padding: 10px; background: var(--accent-light); border-radius: 8px;}
         
-        .section-title { font-size: 14px; color: var(--accent); margin: 30px 0 15px; border-left: 3px solid var(--accent); padding-left: 10px; letter-spacing: 1px; }
-        .desc-box { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; font-size: 14px; color: #cbd5e1; text-align: justify; margin-bottom: 20px; }
-        .desc-box p { margin-bottom: 10px; }
+        .tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 30px; }
+        .tag { background: var(--bg-color); color: var(--accent); padding: 5px 14px; border-radius: 20px; font-size: 12px; border: 1px solid var(--border); font-weight: 500;}
+        
+        .section-title { font-size: 15px; font-weight: 600; color: var(--text-main); margin: 35px 0 15px; display: flex; align-items: center; }
+        .section-title::before { content: ''; display: inline-block; width: 4px; height: 16px; background: var(--accent); margin-right: 8px; border-radius: 2px; }
+        
+        .desc-box { background: var(--bg-color); border-radius: 16px; padding: 25px 20px; font-size: 14px; color: #5C5248; text-align: justify; border: 1px solid var(--border); }
+        .desc-box h4 { font-size: 14px; color: var(--accent); margin-bottom: 8px; margin-top: 15px;}
+        .desc-box h4:first-child { margin-top: 0; }
+        .desc-box p { margin-bottom: 15px; line-height: 1.8; }
         .desc-box p:last-child { margin-bottom: 0; }
         
-        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-        .tag { background: rgba(251, 191, 36, 0.15); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 12px; border: 1px solid rgba(251, 191, 36, 0.3);}
+        .chart-container { background: #fff; border-radius: 16px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02);}
         
-        .chart-container { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border);}
+        .match-box { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 30px;}
+        .match-item { flex: 1; background: var(--bg-color); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border);}
+        .match-item h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; font-weight: normal; }
+        .match-item span { font-size: 14px; color: var(--text-main); font-weight: 600; }
         
-        .match-box { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 30px;}
-        .match-item { flex: 1; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border);}
-        .match-item h4 { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
-        .match-item span { font-size: 14px; color: var(--text-main); font-weight: bold; }
-        
-        .watermark { font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; margin-top: 30px; font-family: monospace;}
+        .watermark { font-size: 11px; color: #D1C8C0; text-align: center; margin-top: 30px; letter-spacing: 1px;}
     </style>
 </head>
 <body>
 
-<div class="container" id="main-container">
+<div class="container">
     <!-- 登录页 -->
     <div id="login-screen">
-        <h1>高维认知拓扑图谱</h1>
-        <p class="subtitle">DEEP COGNITIVE ARCHETYPE SYSTEM v3.0</p>
+        <div class="login-illustration">✧</div>
+        <h1>内在科学家原型图谱</h1>
+        <p class="subtitle">Inner Archetype Assessment</p>
         
-        <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;">请输入您的12位系统授权密钥</div>
+        <div style="font-size: 13px; color: #8C7B6B; margin-bottom: 15px;">输入测评专属密钥，解锁你的底层人格代码</div>
         <div class="input-group">
-            <input type="text" id="passcode" placeholder="XXXX-XXXX-XXXX" maxlength="14" autocomplete="off">
+            <input type="text" id="passcode" placeholder="输入密钥 (如 A1B2-C3D4)" maxlength="14" autocomplete="off">
         </div>
-        <!-- 新增的内嵌错误提示区 -->
-        <div class="error-msg" id="error-msg">⚠️ 系统警告：授权密钥无效或已过期</div>
+        <div class="error-msg" id="error-msg">⚠️ 密钥无效或已过期，请核对后重试</div>
         
-        <button class="btn" onclick="checkPasscode()">解密我的潜意识坐标</button>
+        <button class="btn" onclick="checkPasscode()">开始深度测评</button>
         
         <div class="disclaimer">
-            [ 系统声明 ] 本认知拓扑测试基于非线性动力学模型与荣格（Carl Jung）潜意识原型理论构建。系统提取的用户数据维度包含：逻辑颗粒度、直觉跳跃性、现实锚固力与抽象延展力。生成报告具有高度个人特异性，禁止盗用或作为临床心理诊断依据。最终解释权归深空心理研究中心所有。
+            【专业声明】本测评基于多维心理测量学与荣格（Carl Jung）潜意识模型构建，经过20项行为逻辑交叉验证。结果侧重于解析个人的核心驱动力、情绪模式及潜在内耗点，仅供个人深度自我探索与人际关系参考，不构成任何临床医疗诊断依据。
         </div>
     </div>
 
     <!-- 测试页 -->
     <div id="test-screen">
         <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-        <div class="progress-text" id="progress-text">DATA SYNC: 1 / 15</div>
+        <div class="progress-text" id="progress-text">进度: 1 / 20</div>
         <div class="question" id="question-text">加载中...</div>
         <div id="options-container"></div>
     </div>
@@ -157,114 +161,173 @@
     <!-- 结果页 -->
     <div id="result-screen">
         <div class="report-header">
-            <div class="result-subtitle">你的内在意识投射为</div>
+            <div class="result-subtitle">经系统测算，你最深层的内在原型是：</div>
             <div class="result-title" id="scientist-name">加载中</div>
-            <div style="color: var(--text-muted); font-size: 13px; font-style: italic;" id="scientist-quote">"引语加载中"</div>
+            <div class="quote" id="scientist-quote">"引语加载中"</div>
         </div>
 
         <div class="tags" id="tags-container"></div>
 
-        <div class="section-title">▍ 认知拓扑坐标</div>
+        <div class="section-title">你的认知坐标系</div>
         <div class="chart-container">
             <canvas id="scatterChart"></canvas>
-            <p style="text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 10px;">(X轴: 数据理性—直觉灵感 | Y轴: 抽象理论—现实重构)</p>
+            <p style="text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 10px;">(X轴: 理性逻辑 — 随性直觉 | Y轴: 抽象精神 — 落地执行)</p>
         </div>
 
-        <div class="section-title">▍ 六维能力雷达</div>
-        <div class="chart-container">
+        <div class="section-title">深度人格解剖档案</div>
+        <div class="desc-box" id="scientist-desc">
+            <!-- 动态注入，分点解析 -->
+        </div>
+
+        <div class="section-title">六维潜能雷达图</div>
+        <div class="chart-container" style="margin-bottom: 25px;">
             <canvas id="radarChart"></canvas>
         </div>
 
-        <div class="section-title">▍ 深度人格解构报告</div>
-        <div class="desc-box" id="scientist-desc">
-            <!-- 动态注入 -->
-        </div>
-
-        <div class="section-title">▍ 社交力学匹配度</div>
+        <div class="section-title">灵魂社交圈说明书</div>
         <div class="match-box">
             <div class="match-item">
-                <h4>共振同盟 (灵魂契合)</h4>
+                <h4>✨ 灵魂搭子 (天作之合)</h4>
                 <span id="soulmate">加载中</span>
             </div>
             <div class="match-item">
-                <h4>熵增宿敌 (认知冲突)</h4>
+                <h4>⚠️ 极易互雷 (认知偏差)</h4>
                 <span id="nemesis">加载中</span>
             </div>
         </div>
 
-        <button class="btn" onclick="location.reload()" style="margin-top: 10px;">重新校准坐标</button>
-        <div class="watermark">SYS-ID: <span id="random-id"></span> | © DEEP SPACE INSIGHTS</div>
+        <button class="btn" onclick="location.reload()" style="margin-top: 10px;">保存报告并退出</button>
+        <div class="watermark">测评档案编号: <span id="random-id"></span><br>© 心理学自我探索实验室</div>
     </div>
 </div>
 
 <script>
-    // ---------------------------------------------------------
-    // 核心密钥设置：这个是你发给客户的密码。
-    // 客户输入时可以带横杠，也可以不带，大小写均可。
-    // ---------------------------------------------------------
+    // 固定的长密码
     const VALID_PASSCODE = "K9F2X7R4V1M8"; 
 
-    // 题库
+    // 小红书向：20道题，每题4个选项，场景贴近生活/职场/感情/自我内耗
+    // X轴 (dx): 负=逻辑理性，正=直觉感性
+    // Y轴 (dy): 负=内心/精神/理论，正=行动/现实/结果
     const questions = [
-        { q: "面对一个几乎无解的烂摊子，你潜意识的第一反应是：", options: [
-            { t: "寻找线头，把它拆解成无数个可控的小模块。", dx: -2, dy: 0 },
-            { t: "跳出当前框架，寻找能一击毙命的降维打击方案。", dx: 2, dy: 0 }
+        { q: "周末突然遇到极度心烦的突发状况，你下意识的平替方案是？", options: [
+            { t: "A. 立刻拿出备忘录，列出清晰的解决步骤。", dx: -2, dy: 2 },
+            { t: "B. 关掉手机，一个人安静地思考问题根源。", dx: -2, dy: -2 },
+            { t: "C. 管他的，先点杯奶茶或者去疯狂大采购发泄一下。", dx: 2, dy: 2 },
+            { t: "D. 找个安静的地方听歌/冥想，让负面情绪自己流走。", dx: 2, dy: -2 }
         ]},
-        { q: "当获取到一个全新的复杂概念时，你倾向于：", options: [
-            { t: "必须搞懂它底层的推导公式和绝对真理。", dx: 0, dy: -2 },
-            { t: "马上思考这玩意儿能在现实中造出什么新东西。", dx: 0, dy: 2 }
+        { q: "在职场或小组合作中，你最讨厌哪种队友？", options: [
+            { t: "A. 只会画大饼，一到执行就拉垮的人。", dx: -2, dy: 2 },
+            { t: "B. 逻辑混乱，说话抓不到重点的人。", dx: -2, dy: -2 },
+            { t: "C. 墨守成规，什么都要按死规矩来的老古董。", dx: 2, dy: -2 },
+            { t: "D. 毫无边界感，喜欢把私人情绪带到工作里的人。", dx: 2, dy: 2 }
         ]},
-        { q: "如果你拥有一项超自然能力，你希望是：", options: [
-            { t: "一眼看穿世间万物运转的底层代码。", dx: -2, dy: -1 },
-            { t: "双手能够凭空捏造、改变物质的物理形态。", dx: 1, dy: 2 }
+        { q: "当你买了一件结构极其复杂的网红组装家具，你会：", options: [
+            { t: "A. 严格按照说明书的步骤，一步步对照拼装。", dx: -2, dy: 2 },
+            { t: "B. 先研究一下它的承重结构和设计原理。", dx: -2, dy: -2 },
+            { t: "C. 看一眼成品图，直接上手凭感觉拼，拼错再拆。", dx: 2, dy: 2 },
+            { t: "D. 觉得太麻烦，花钱请个师傅或者干脆放着当摆件。", dx: 2, dy: -2 }
         ]},
-        { q: "与人深度交流时，最让你感到绝望的是：", options: [
-            { t: "对方逻辑碎裂，充满情感宣泄却毫无事实依据。", dx: -2, dy: 0 },
-            { t: "对方极其死板，被规则框死，毫无想象力空间。", dx: 2, dy: 0 }
+        { q: "和别人产生争执时，你最擅长的“武器”是：", options: [
+            { t: "A. 用无懈可击的客观事实和证据甩他脸上。", dx: -2, dy: 2 },
+            { t: "B. 冷静地指出对方逻辑里的致命漏洞。", dx: -2, dy: -2 },
+            { t: "C. 四两拨千斤，用阴阳怪气或者直觉直击对方痛点。", dx: 2, dy: -2 },
+            { t: "D. 用极其强烈的情绪感染力让对方退缩。", dx: 2, dy: 2 }
         ]},
-        { q: "阅读一本小说或看一部电影，你最容易被什么击中？", options: [
-            { t: "严密无bug、环环相扣的极致烧脑推演。", dx: -2, dy: 0 },
-            { t: "充满隐喻、打破常规的超现实狂想设定。", dx: 2, dy: 0 }
+        { q: "对于“搞钱”这件事，你内心最真实的看法是：", options: [
+            { t: "A. 搞钱是人生的底气，必须有明确的攒钱计划和目标。", dx: -2, dy: 2 },
+            { t: "B. 钱是价值的衡量工具，我更看重赚钱背后的商业逻辑。", dx: -2, dy: -2 },
+            { t: "C. 想搞就搞，往往能靠一个突然的灵感或副业赚到钱。", dx: 2, dy: 2 },
+            { t: "D. 钱够花就行，精神的富足和自由比金钱更重要。", dx: 2, dy: -2 }
         ]},
-        { q: "如果要迅速掌握一门硬核新技能，你的路径是：", options: [
-            { t: "啃透最权威的理论基石，绝不留下知识盲区。", dx: 0, dy: -2 },
-            { t: "不看说明书，直接上手试错，在血泪中总结。", dx: 0, dy: 2 }
+        { q: "让你感到最治愈的“充电”方式是：", options: [
+            { t: "A. 把乱糟糟的房间彻底打扫一遍，按颜色分类收纳。", dx: -2, dy: 2 },
+            { t: "B. 深度阅读一本烧脑的书或者看一部硬核悬疑片。", dx: -2, dy: -2 },
+            { t: "C. 随性来一场说走就走的特种兵旅行，去体验新鲜事物。", dx: 2, dy: 2 },
+            { t: "D. 漫无目的地散步，在脑海里进行天马行空的幻想。", dx: 2, dy: -2 }
         ]},
-        { q: "当你的核心观点遭到权威人士的严厉质疑时：", options: [
-            { t: "冷静甩出无法辩驳的数据和实验结果进行绝杀。", dx: -1, dy: 1 },
-            { t: "内心冷笑，真理往往掌握在少数人手里，时间会证明。", dx: 1, dy: -1 }
+        { q: "在谈恋爱/交友时，你更容易被什么样的人吸引？", options: [
+            { t: "A. 情绪稳定，事事有回应，能解决现实问题的靠谱成年人。", dx: -2, dy: 2 },
+            { t: "B. 智性恋狂喜，能在专业领域降维打击我的人。", dx: -2, dy: -2 },
+            { t: "C. 充满变数，能带我体验各种心跳和刺激的有趣灵魂。", dx: 2, dy: 2 },
+            { t: "D. 能懂我欲言又止的脆弱，产生深刻灵魂共鸣的人。", dx: 2, dy: -2 }
         ]},
-        { q: "你如何定义“规则”这个词？", options: [
-            { t: "维持任何复杂系统免于崩溃的绝对基石。", dx: -2, dy: 0 },
-            { t: "旧时代遗留的枷锁，就是用来被打破和重构的。", dx: 2, dy: 0 }
+        { q: "如果要学习一项全新的技能（比如剪辑/烘焙），你的路径是：", options: [
+            { t: "A. 报个系统班，跟着老师按部就班地练。", dx: -2, dy: 2 },
+            { t: "B. 先去知乎/B站把底层理论和干货看透再说。", dx: -2, dy: -2 },
+            { t: "C. 不看教程，自己瞎鼓捣，失败了也觉得好玩。", dx: 2, dy: 2 },
+            { t: "D. 看很多大师的作品找灵感，但在动手前容易拖延。", dx: 2, dy: -2 }
         ]},
-        { q: "对待高风险，你的真实态度是：", options: [
-            { t: "只要经过极其精密的计算，风险就是可控的数学题。", dx: -2, dy: 0 },
-            { t: "高维度的回报必然伴随极度危险，凭直觉直接冲。", dx: 2, dy: 0 }
+        { q: "你的房间/办公桌通常的状态是：", options: [
+            { t: "A. 永远保持肉眼可见的整洁，东西用完立刻归位。", dx: -2, dy: 2 },
+            { t: "B. 表面整洁，但抽屉里面可能是有分类的杂乱。", dx: -2, dy: -2 },
+            { t: "C. 看起来很乱，但我知道每一件东西在哪里（乱中有序）。", dx: 2, dy: 2 },
+            { t: "D. 随心所欲，常常找东西靠缘分。", dx: 2, dy: -2 }
         ]},
-        { q: "深夜独处时，你的大脑最常运行的程序是：", options: [
-            { t: "复盘当天的细节，或者规划未来的具体执行路径。", dx: -1, dy: 2 },
-            { t: "进行天马行空的思想实验，思考宇宙或人性的终极命题。", dx: 1, dy: -2 }
+        { q: "面对人生重大的分岔路口（如跳槽/分手），你的决策依据是：", options: [
+            { t: "A. 列出详细的利弊对比表格，算一笔经济账。", dx: -2, dy: 2 },
+            { t: "B. 评估长远的发展趋势和事物发展的底层规律。", dx: -2, dy: -2 },
+            { t: "C. 凭第一直觉，心里哪个选项让我爽，就选哪个。", dx: 2, dy: 2 },
+            { t: "D. 顺其自然，相信宇宙/命运会给出最好的安排。", dx: 2, dy: -2 }
         ]},
-        { q: "你的个人空间（书桌/电脑桌面）通常呈现什么状态？", options: [
-            { t: "分类极其明确，追求变态级别的整洁与秩序。", dx: -2, dy: 0 },
-            { t: "表面混乱，但拥有一套只有自己懂的“乱中有序”法则。", dx: 2, dy: 0 }
+        { q: "如果人类只剩下一天时间，你会怎么度过？", options: [
+            { t: "A. 把所有的财产、后事安排得明明白白。", dx: -2, dy: 2 },
+            { t: "B. 思考人类灭亡的哲学意义，坦然接受。", dx: -2, dy: -2 },
+            { t: "C. 去平时最想去但不敢去的地方疯狂一把。", dx: 2, dy: 2 },
+            { t: "D. 和最爱的人拥抱在一起，什么都不做。", dx: 2, dy: -2 }
         ]},
-        { q: "在团队协作中，你最不可替代的价值是：", options: [
-            { t: "将天马行空的PPT落地为极其严密的执行SOP。", dx: -1, dy: 2 },
-            { t: "在所有人都思维枯竭时，提出石破天惊的颠覆性点子。", dx: 2, dy: -1 }
+        { q: "经常让你感到极度内耗的事情是：", options: [
+            { t: "A. 计划好的事情被打乱，或者别人执行力太差。", dx: -2, dy: 2 },
+            { t: "B. 觉得周围的人都很肤浅，找不到精神层面的对话者。", dx: -2, dy: -2 },
+            { t: "C. 冲动做完某件事/说完某句话后，深夜疯狂后悔。", dx: 2, dy: 2 },
+            { t: "D. 共情能力太强，不自觉地吸收了别人的负能量。", dx: 2, dy: -2 }
         ]},
-        { q: "让你感到灵魂战栗、最有成就感的瞬间是：", options: [
-            { t: "在脑海中想通了一个极其宏大且复杂的抽象难题。", dx: 0, dy: -2 },
-            { t: "亲手打造的一件完美实物/项目终于面世运行。", dx: 0, dy: 2 }
+        { q: "在群聊里大家讨论一个热点八卦，你通常的反应是：", options: [
+            { t: "A. 充当“辟谣机”，立刻去查证事实真相和数据。", dx: -2, dy: 2 },
+            { t: "B. 站在上帝视角，分析这件事背后的社会学/心理学动机。", dx: -2, dy: -2 },
+            { t: "C. 跟着大伙一起吃瓜、发表情包，烘托气氛。", dx: 2, dy: 2 },
+            { t: "D. 觉得很无聊，静音群聊或者根本不看。", dx: 2, dy: -2 }
         ]},
-        { q: "如果人类面临绝境，你认为最终拯救我们的会是：", options: [
-            { t: "极致的绝对理性和冷酷的数学计算。", dx: -2, dy: -1 },
-            { t: "人类灵魂深处不可磨灭的灵感与奇迹创造力。", dx: 2, dy: 1 }
+        { q: "如果朋友找你倾诉失恋的痛苦，你会：", options: [
+            { t: "A. 帮她分析前任有多渣，直接甩出“断联”执行手册。", dx: -2, dy: 2 },
+            { t: "B. 理性剖析这段关系的不匹配之处，劝她放下。", dx: -2, dy: -2 },
+            { t: "C. 直接拉她出去喝酒蹦迪吃火锅，开心最重要。", dx: 2, dy: 2 },
+            { t: "D. 静静听她哭，和她一起共情流泪，提供情绪抱抱。", dx: 2, dy: -2 }
         ]},
-        { q: "假如你可以选择一张单程票穿越时空，你会去：", options: [
-            { t: "高度秩序化、由超级AI统治的赛博未来。", dx: -1, dy: 1 },
-            { t: "充满神秘色彩、物理法则可能失效的多维宇宙。", dx: 2, dy: -1 }
+        { q: "你更向往下面哪种理想生活？", options: [
+            { t: "A. 事业有成，财务自由，所有事物都在自己的掌控中。", dx: -2, dy: 2 },
+            { t: "B. 拥有绝对的独立空间，能无忧无虑地研究自己热爱的领域。", dx: -2, dy: -2 },
+            { t: "C. 开一家品味极其独特的买手店或咖啡馆，每天见不同的人。", dx: 2, dy: 2 },
+            { t: "D. 隐居在风景如画的地方，种种花草，不被世俗打扰。", dx: 2, dy: -2 }
+        ]},
+        { q: "别人对你最常见的误解往往是：", options: [
+            { t: "A. 觉得我太冷血、太功利，实际上我只是注重效率。", dx: -2, dy: 2 },
+            { t: "B. 觉得我太傲慢、不好接近，实际上我只是沉浸在自己的世界。", dx: -2, dy: -2 },
+            { t: "C. 觉得我太疯、没定性，实际上我只是讨厌一成不变。", dx: 2, dy: 2 },
+            { t: "D. 觉得我太柔弱或太佛系，实际上我内心极其通透。", dx: 2, dy: -2 }
+        ]},
+        { q: "每天入睡前的那十分钟，你脑子里都在闪过什么？", options: [
+            { t: "A. 强迫症般地复盘今天还有什么事没做，明天的to-do list。", dx: -2, dy: 2 },
+            { t: "B. 一个突然冒出来的深刻问题，甚至越想越精神。", dx: -2, dy: -2 },
+            { t: "C. 脑补各种玛丽苏/大男主剧情，自己是主角。", dx: 2, dy: 2 },
+            { t: "D. 回忆一些微小的美好瞬间，或者一种莫名的空虚感。", dx: 2, dy: -2 }
+        ]},
+        { q: "如何评价自己的拖延症？", options: [
+            { t: "A. 基本没有。说干就干是我的美德。", dx: -2, dy: 2 },
+            { t: "B. 思想的巨人，行动的矮子。想得很完美就是不动手。", dx: -2, dy: -2 },
+            { t: "C. 极其严重。只有在死线前一天晚上，灵感才会突然爆发。", dx: 2, dy: 2 },
+            { t: "D. 我不认为那是拖延，顺应当下的心境比完成任务更重要。", dx: 2, dy: -2 }
+        ]},
+        { q: "在整理照片发朋友圈时，你会：", options: [
+            { t: "A. 精心挑选，排版整齐，配上简短直接的说明。", dx: -2, dy: 2 },
+            { t: "B. 很少发朋友圈，觉得把生活分享给别人看毫无意义。", dx: -2, dy: -2 },
+            { t: "C. 加满滤镜，发一堆好看的图，配上很搞怪的文字。", dx: 2, dy: 2 },
+            { t: "D. 发一些风景或者模糊的局部，配上一句极其感性的歌词。", dx: 2, dy: -2 }
+        ]},
+        { q: "用一个词形容你的灵魂底色，你觉得是：", options: [
+            { t: "A. 坚不可摧的钢。", dx: -2, dy: 2 },
+            { t: "B. 深不见底的海。", dx: -2, dy: -2 },
+            { t: "C. 肆意燃烧的火。", dx: 2, dy: 2 },
+            { t: "D. 捉摸不透的风。", dx: 2, dy: -2 }
         ]}
     ];
 
@@ -272,48 +335,37 @@
     let scoreX = 0; 
     let scoreY = 0; 
 
-    // 输入框动态格式化 (自动加横杠)
+    // 输入框动态格式化
     document.getElementById('passcode').addEventListener('input', function (e) {
-        // 每次输入时隐藏报错提示
         document.getElementById('error-msg').classList.remove('show');
         document.getElementById('passcode').classList.remove('shake');
-
         let value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
         if (value.length > 4) value = value.slice(0, 4) + '-' + value.slice(4);
         if (value.length > 9) value = value.slice(0, 9) + '-' + value.slice(9);
         e.target.value = value;
     });
 
-    // 检查密码核心逻辑
+    // 验证逻辑
     function checkPasscode() {
         const inputField = document.getElementById('passcode');
         const errorMsg = document.getElementById('error-msg');
-        
-        // 无论用户怎么输入，剥离掉横杠和空格，全部转大写进行对比
         const cleanInput = inputField.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
 
         if (cleanInput === VALID_PASSCODE) { 
-            // 密码正确，隐藏登录页，进入测试页
             errorMsg.classList.remove('show');
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('test-screen').style.display = 'block';
             loadQuestion();
         } else {
-            // 密码错误，触发红字报错和震动动画
             errorMsg.classList.add('show');
-            
-            // 移除再添加shake类，为了让动画可以重复触发
             inputField.classList.remove('shake');
-            void inputField.offsetWidth; // 触发DOM重绘
+            void inputField.offsetWidth; 
             inputField.classList.add('shake');
         }
     }
 
-    // 监听键盘回车键，按回车也能直接登录
     document.getElementById('passcode').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            checkPasscode();
-        }
+        if (e.key === 'Enter') checkPasscode();
     });
 
     // 加载问题
@@ -325,8 +377,7 @@
         
         const percent = ((currentQ) / questions.length) * 100;
         document.getElementById('progress-fill').style.width = percent + '%';
-        document.getElementById('progress-text').innerText = `DATA SYNC: ${currentQ + 1} / ${questions.length}`;
-        
+        document.getElementById('progress-text').innerText = `测评进度: ${currentQ + 1} / ${questions.length}`;
         document.getElementById('question-text').innerText = questions[currentQ].q;
         
         const container = document.getElementById('options-container');
@@ -339,82 +390,101 @@
                 scoreX += opt.dx;
                 scoreY += opt.dy;
                 currentQ++;
-                setTimeout(loadQuestion, 150);
+                setTimeout(loadQuestion, 150); // 微弱延迟显得自然
             };
             container.appendChild(div);
         });
     }
 
-    // 显示结果
+    // 小红书向的结果分析库
     function showResult() {
         document.getElementById('test-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'block';
         window.scrollTo(0, 0);
 
-        document.getElementById('random-id').innerText = Math.random().toString(36).substr(2, 8).toUpperCase();
+        document.getElementById('random-id').innerText = "R" + Math.random().toString(10).substr(2, 6);
 
         let profile = {};
-        let radarData = []; 
 
         if (scoreX <= 0 && scoreY > 0) {
             profile = {
-                name: "玛丽·居里 (Marie Curie)",
-                title: "现实炼金术士 · The Alchemist",
-                quote: "“弱者坐待时机，强者制造时机。”",
-                tags: ["死磕到底", "实干家", "结果导向", "钢铁意志"],
+                name: "居里夫人型 (Marie Curie)",
+                title: "人间清醒的「冷酷实干家」",
+                quote: "“我不相信天上掉馅饼，我只相信我亲手赚到的底气。”",
+                tags: ["高执行力", "搞钱达人", "拒绝画饼", "慕强心理", "边界感强"],
                 desc: `
-                    <p><strong>【核心驱动力】</strong> 你是一个极其罕见的「高维逻辑 × 极致实干」结合体。你不相信虚无缥缈的大饼，只相信经过汗水和时间淬炼出的真实数据。别人在空想，而你已经在动手把泥土变成黄金。你的专注力犹如激光切刀，能够忍受常人无法忍受的枯燥。</p>
-                    <p><strong>【人格暗面】</strong> 过度的现实主义让你有时显得冷漠不近人情。你极度讨厌“蠢人”和“低效”，在团队中容易成为严苛的暴君。由于习惯把一切扛在肩上，你极易陷入长期的过劳状态而不自知。</p>
-                    <p><strong>【破局建议】</strong> 允许世界有“灰度”和“无意义”。试着把一部分信任分担给他人，哪怕他们没有你做得完美。适当的放空不是浪费时间，而是为你极高强度的执行力进行系统散热。</p>
+                    <h4>✨ 你的内核特写：</h4>
+                    <p>你是一个极其罕见的「高维逻辑 × 极强实干」结合体。在大多数人还在迷茫、抱怨或者精神内耗的时候，你已经在低头默默把事情做完了。你看透了人际交往本质上是价值交换，所以你不喜欢没用的社交，极其讨厌别人画大饼。</p>
+                    <h4>💼 日常与搞钱模式：</h4>
+                    <p>在职场中你是最靠谱的基石。只要钱给够，或者目标明确，你的专注力犹如一台推土机。你极其重视“确定性”，喜欢账户里余额上涨带来的安全感，凡事喜欢亲力亲为。</p>
+                    <h4>⚠️ 极易内耗的暗面：</h4>
+                    <p>你最大的内耗来源于“对失控的恐惧”以及“身边人太蠢”。你对细节有强迫症，常常觉得“交给自己不如我自己做”。这导致你很容易陷入长期的过劳状态，甚至显得冷血、不好接近。</p>
+                    <h4>💊 专属自救指南：</h4>
+                    <p>学着给人生“留白”。你要允许世界有灰度，允许别人犯错。定期进行一次没有任何目的性的“废物躺”，因为你的弦绷得太紧了，需要卸载掉那些不属于你的责任感。</p>
                 `,
-                soulmate: "牛顿 (绝对秩序官)",
-                nemesis: "爱因斯坦 (量子织梦者)",
-                radar: [95, 98, 40, 60, 30, 45]
+                soulmate: "牛顿型 (高智感同行者)",
+                nemesis: "特斯拉型 (容易被对方的跳脱气死)",
+                radar: [95, 98, 40, 60, 35, 45]
             };
         } else if (scoreX <= 0 && scoreY <= 0) {
             profile = {
-                name: "艾萨克·牛顿 (Isaac Newton)",
-                title: "绝对秩序官 · The Architect",
-                quote: "“真理永远在简单的深处，不在繁杂的表象。”",
-                tags: ["底层逻辑", "降维打击", "高冷智性", "战略家"],
+                name: "牛顿型 (Isaac Newton)",
+                title: "高智感的「精神独立学者」",
+                quote: "“热闹是他们的，我只觉得吵闹且降智。”",
+                tags: ["智性恋", "精神洁癖", "深度思考", "社交隔离", "逻辑怪物"],
                 desc: `
-                    <p><strong>【核心驱动力】</strong> 你是「纯粹理性 × 深度抽象」的化身。你的大脑是一台极其精密的量子计算机，生来就是为了看破世间万物运行的底层法则。你对“混乱”有着生理上的厌恶，热衷于在精神世界构建起庞大、严密、无懈可击的真理帝国。</p>
-                    <p><strong>【人格暗面】</strong> 极度的理性让你带有某种“神性”的傲慢。在你的评价体系里，大部分人类的情感拉扯都是低效且无意义的。你容易陷入社交隔离，成为别人眼中高冷、难以接近的异类孤岛。</p>
-                    <p><strong>【破局建议】</strong> 降维兼容。尝试理解“人类的情绪本身也是一种客观数据”。学会使用温和的社交面具，这将大大减少你推行你那天才理论时的现实阻力。</p>
+                    <h4>✨ 你的内核特写：</h4>
+                    <p>你身上带着一种高冷的“智性美感”。你的大脑是一台极度精密的扫描仪，看待世界喜欢透过现象看本质。你拥有精神洁癖，对低效的沟通和庸俗的八卦有生理性厌恶，因此大部分时间你都喜欢待在自己的小世界里。</p>
+                    <h4>💼 日常与生活模式：</h4>
+                    <p>你极其需要独处空间来给精神充电。你可能是个深度阅读者、小众爱好发烧友，或者某一领域的隐形大佬。你不盲从权威，因为你自己有一套极其严密的判断逻辑。</p>
+                    <h4>⚠️ 极易内耗的暗面：</h4>
+                    <p>极度的理性让你带有一种不自知的“傲慢”。在别人跟你抱怨情绪时，你总是试图讲道理，这常常让你在亲密关系中碰壁。你会觉得世界上懂你的人太少，容易陷入深深的孤独感和精神虚无。</p>
+                    <h4>💊 专属自救指南：</h4>
+                    <p>请记住：“情绪本身，也是一种客观需要处理的数据”。尝试在别人哭泣时，先递上纸巾而不是解决方案。偶尔摘下高智商的面具，拥抱一下人间烟火气，你会发现世界并不可怕。</p>
                 `,
-                soulmate: "居里夫人 (现实炼金术士)",
-                nemesis: "特斯拉 (狂热造物主)",
-                radar: [100, 50, 60, 95, 20, 30]
+                soulmate: "居里夫人型 (相互尊重边界感)",
+                nemesis: "爱因斯坦型 (无法理解对方的感性泛滥)",
+                radar: [100, 50, 60, 95, 30, 30]
             };
         } else if (scoreX > 0 && scoreY > 0) {
             profile = {
-                name: "尼古拉·特斯拉 (Nikola Tesla)",
-                title: "狂热造物主 · The Promethean",
-                quote: "“我不在乎他们偷了我的想法，我在乎他们没有自己的想法。”",
-                tags: ["颠覆式创新", "疯批美人", "灵感爆棚", "打破规则"],
+                name: "特斯拉型 (Nikola Tesla)",
+                title: "天马行空的「疯狂造物主」",
+                quote: "“规矩就是用来打破的，平庸才是我最大的敌人。”",
+                tags: ["脑洞大开", "三分钟热度", "极致浪漫", "审美在线", "破局者"],
                 desc: `
-                    <p><strong>【核心驱动力】</strong> 欢迎来到「狂野直觉 × 现实重构」的频道！你是一个彻头彻尾的浪漫主义极客。你的脑子里装满了能闪瞎常人的疯狂点子，并且你有极其强烈的冲动要把它们变成现实。你极具个人魅力，像一道难以捕捉的交流电，只要让你找到插座，你就能点亮整个世界。</p>
-                    <p><strong>【人格暗面】</strong> 极度缺乏耐心和持久力。你热衷于“从0到1”的刺激开局，却极度厌恶“从1到100”的枯燥维护。因为思维太跳跃，常人很难跟上你的节奏，导致你容易有一种“生不逢时”的怀才不遇感。</p>
-                    <p><strong>【破局建议】</strong> 找一个靠谱的“居里夫人”型合伙人。你需要有人帮你把天马行空的想法落地成世俗的标准。克制住不停开新坑的欲望，把至少一件事做到绝对的闭环。</p>
+                    <h4>✨ 你的内核特写：</h4>
+                    <p>你是一个彻头彻尾的浪漫主义极客！你是人群中最有趣、最耀眼的存在。你的思维是跳跃的，脑子里总是有各种各样新鲜、甚至疯狂的点子。你讨厌朝九晚五，讨厌一眼望到头的人生，骨子里充满了对新鲜感的渴望。</p>
+                    <h4>💼 日常与生活模式：</h4>
+                    <p>你可能是个穿搭潮人、经常换爱好的体验派、或者极具创造力的自由职业者。你做事全凭“灵感”和“手感”，状态好的时候效率惊人，能做出让所有人惊艳的成果。</p>
+                    <h4>⚠️ 极易内耗的暗面：</h4>
+                    <p>你最大的痛点是“重度三分钟热度”和“拖延症晚期”。你极度享受从0到1的快感，却极其厌恶从1到100的日常维护。你常常因为开了太多的坑填不完而焦虑，深夜疯狂后悔自己白天的冲动。</p>
+                    <h4>💊 专属自救指南：</h4>
+                    <p>找一个靠谱的“执行型”搭子帮你擦屁股（比如居里夫人型）。另外，试着把大目标拆解成极其细小的阶段，克制住自己永远在追逐下一个新鲜事物的欲望，把一件事做到真正闭环。</p>
                 `,
-                soulmate: "爱因斯坦 (量子织梦者)",
-                nemesis: "牛顿 (绝对秩序官)",
-                radar: [40, 85, 95, 45, 100, 60]
+                soulmate: "爱因斯坦型 (懂你的精神世界)",
+                nemesis: "牛顿型 (会被对方的死板逼疯)",
+                radar: [45, 80, 95, 55, 100, 75]
             };
         } else {
             profile = {
-                name: "阿尔伯特·爱因斯坦 (Albert Einstein)",
-                title: "量子织梦者 · The Dreamer",
-                quote: "“想象力比知识更重要，因为知识是有限的。”",
-                tags: ["脑洞大开", "十一维度", "哲思者", "纯真孩童"],
+                name: "爱因斯坦型 (Albert Einstein)",
+                title: "通透灵气的「灵魂哲学家」",
+                quote: "“我并不在乎这世界怎么运转，我只在乎灵魂的自由。”",
+                tags: ["共情达人", "高维精神", "人间观察家", "佛系青年", "拖延大师"],
                 desc: `
-                    <p><strong>【核心驱动力】</strong> 你的灵魂徘徊在「终极直觉 × 深度抽象」的象限。你的肉体生活在三维空间，但你的思想早已飞升。相比于枯燥的实验数据，你更相信直觉带来的“神启”。你拥有一种孩童般的好奇心，不屑于世俗的争斗，只关心宇宙和人性的终极答案。</p>
-                    <p><strong>【人格暗面】</strong> 严重的“落地困难症”。你可以在脑海中推演出宇宙大爆炸的几万种可能，却常常忘记今天中午该吃什么、账单该怎么付。你容易活在自己构建的理想国里，逃避现实生活的一地鸡毛。</p>
-                    <p><strong>【破局建议】</strong> 设立“地球锚点”。建立最基础的日常纪律（哪怕只是按时作息），这不会抹杀你的灵气，反而能保护你不被现实的琐碎击垮。你的思想已经是武器，只需一点点现实的弹药。</p>
+                    <h4>✨ 你的内核特写：</h4>
+                    <p>你是一个披着现代人外衣的古老灵魂。你极具灵气，直觉准得吓人，拥有极其强大的共情能力。物质对你来说永远不是第一位的，你追求的是内心的宁静、美的体验和绝对的精神自由。</p>
+                    <h4>💼 日常与生活模式：</h4>
+                    <p>你身上有一种松弛感，脾气通常很好，是朋友圈里的“倾听者”。比起去大城市内卷，你更渴望有一家自己的小店、或者一份能够随时接触大自然、艺术的工作。你喜欢在脑海里进行无数次浪漫的思想旅行。</p>
+                    <h4>⚠️ 极易内耗的暗面：</h4>
+                    <p>你是一个“超强情绪海绵”，极易吸收别人的负能量导致自己抑郁。同时你有严重的“落地困难症”，行动力极差。现实生活的琐碎（比如记账、打扫、繁琐的手续）常常让你感到崩溃和窒息。</p>
+                    <h4>💊 专属自救指南：</h4>
+                    <p>建立你的“地球防沉迷锚点”。你必须在现实中给自己设定一些最基础的纪律（比如按时吃饭、强制断网睡觉）。另外，学会拒绝别人的情绪倾倒，保护好自己珍贵的能量场。</p>
                 `,
-                soulmate: "特斯拉 (狂热造物主)",
-                nemesis: "居里夫人 (现实炼金术士)",
-                radar: [50, 20, 100, 95, 80, 85]
+                soulmate: "特斯拉型 (一起天马行空)",
+                nemesis: "居里夫人型 (对方觉得你不切实际)",
+                radar: [50, 25, 100, 90, 70, 95]
             };
         }
 
@@ -424,20 +494,22 @@
         document.getElementById('soulmate').innerText = profile.soulmate;
         document.getElementById('nemesis').innerText = profile.nemesis;
 
-        const tagsHTML = profile.tags.map(tag => `<span class="tag">#${tag}</span>`).join('');
+        const tagsHTML = profile.tags.map(tag => `<span class="tag"># ${tag}</span>`).join('');
         document.getElementById('tags-container').innerHTML = tagsHTML;
 
-        Chart.defaults.color = '#94a3b8';
-        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+        // 图表基础颜色适应浅色主题
+        Chart.defaults.color = '#8C7B6B';
+        Chart.defaults.font.family = "'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif";
 
+        // 散点图
         const ctxScatter = document.getElementById('scatterChart').getContext('2d');
         new Chart(ctxScatter, {
             type: 'scatter',
             data: {
                 datasets: [{
-                    label: '潜意识落点',
+                    label: '你的认知落点',
                     data: [{ x: scoreX, y: scoreY }],
-                    backgroundColor: '#fbbf24',
+                    backgroundColor: '#C1A073',
                     borderColor: '#fff',
                     borderWidth: 2,
                     pointRadius: 8,
@@ -449,32 +521,34 @@
                 plugins: { legend: { display: false }, tooltip: { enabled: false } },
                 scales: {
                     x: {
-                        min: -20, max: 20,
-                        grid: { color: (ctx) => ctx.tick.value === 0 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
+                        min: -40, max: 40,
+                        grid: { color: (ctx) => ctx.tick.value === 0 ? '#EAE1D8' : '#f7f4f0', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
                     },
                     y: {
-                        min: -20, max: 20,
-                        grid: { color: (ctx) => ctx.tick.value === 0 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
+                        min: -40, max: 40,
+                        grid: { color: (ctx) => ctx.tick.value === 0 ? '#EAE1D8' : '#f7f4f0', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
                     }
                 }
             }
         });
 
+        // 随机小波动
         const randomize = (val) => Math.min(100, Math.max(10, val + Math.floor(Math.random() * 10) - 5));
         const finalRadar = profile.radar.map(randomize);
 
+        // 雷达图
         const ctxRadar = document.getElementById('radarChart').getContext('2d');
         new Chart(ctxRadar, {
             type: 'radar',
             data: {
-                labels: ['逻辑分析', '落地执行', '直觉顿悟', '理论抽象', '规则破坏', '感性共情'],
+                labels: ['逻辑推演', '现实落地', '灵感顿悟', '精神内耗', '打破常规', '情绪共情'],
                 datasets: [{
                     label: '能力维度',
                     data: finalRadar,
-                    backgroundColor: 'rgba(251, 191, 36, 0.2)',
-                    borderColor: '#fbbf24',
+                    backgroundColor: 'rgba(193, 160, 115, 0.2)', // 燕麦金半透明
+                    borderColor: '#C1A073',
                     pointBackgroundColor: '#fff',
-                    pointBorderColor: '#fbbf24',
+                    pointBorderColor: '#C1A073',
                     borderWidth: 2,
                 }]
             },
@@ -483,9 +557,9 @@
                 plugins: { legend: { display: false } },
                 scales: {
                     r: {
-                        angleLines: { color: 'rgba(255,255,255,0.1)' },
-                        grid: { color: 'rgba(255,255,255,0.1)' },
-                        pointLabels: { color: '#cbd5e1', font: { size: 12 } },
+                        angleLines: { color: '#EAE1D8' },
+                        grid: { color: '#EAE1D8' },
+                        pointLabels: { color: '#5C5248', font: { size: 12, weight: '500' } },
                         ticks: { display: false, min: 0, max: 100 }
                     }
                 }
