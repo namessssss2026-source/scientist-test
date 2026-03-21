@@ -122,12 +122,20 @@
         .desc-box p { margin-bottom: 15px; line-height: 1.8; }
         .desc-box p:last-child { margin-bottom: 0; }
         
-        /* 图表容器加固 */
-        .chart-container { 
-            background: #fff; border-radius: 16px; padding: 20px 10px; 
+        /* 🔥全新升级的正方形坐标系样式🔥 */
+        .scatter-wrapper {
+            position: relative; background: #fff; border-radius: 16px; padding: 40px; 
             border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-            position: relative; width: 100%;
+            margin-bottom: 25px; display: flex; justify-content: center; align-items: center;
         }
+        .canvas-box { position: relative; width: 100%; aspect-ratio: 1 / 1; } /* 强制1:1完美正方形 */
+        .axis-label { position: absolute; font-size: 11px; font-weight: bold; color: #C1A073; letter-spacing: 2px; }
+        .axis-label.top { top: 12px; left: 50%; transform: translateX(-50%); }
+        .axis-label.bottom { bottom: 12px; left: 50%; transform: translateX(-50%); }
+        .axis-label.left { left: 12px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+        .axis-label.right { right: 12px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+        .chart-container { background: #fff; border-radius: 16px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 25px;}
         
         .match-box { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 30px;}
         .match-item { flex: 1; background: var(--bg-color); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border);}
@@ -175,4 +183,534 @@
         <div class="login-illustration" style="animation: pulse 1.5s infinite;">✦</div>
         <div class="loading-text" id="loading-status">正在提取六维能力潜意识数据...</div>
         <div class="spinner-box"><div class="spinner-fill" id="spinner-fill"></div></div>
-        <div class="
+        <div class="loading-subtext">基于非线性动力学模型，多维比对中</div>
+    </div>
+
+    <!-- 结果页 -->
+    <div id="result-screen">
+        <div class="report-header">
+            <div class="result-subtitle">经系统测算，你最深层的内在原型是：</div>
+            <div class="result-title" id="scientist-name">加载中</div>
+            <div class="quote" id="scientist-quote">"引语加载中"</div>
+        </div>
+
+        <div class="tags" id="tags-container"></div>
+
+        <div class="section-title">你的认知坐标系</div>
+        <!-- 完美的正方形图表包装器 -->
+        <div class="scatter-wrapper">
+            <span class="axis-label top">现实执行</span>
+            <span class="axis-label bottom">精神抽象</span>
+            <span class="axis-label left">逻辑理智</span>
+            <span class="axis-label right">随性直觉</span>
+            <div class="canvas-box">
+                <canvas id="scatterChart"></canvas>
+            </div>
+        </div>
+
+        <div class="section-title">六维潜能雷达图</div>
+        <div class="chart-container">
+            <canvas id="radarChart"></canvas>
+        </div>
+
+        <div class="section-title">灵魂社交圈说明书</div>
+        <div class="match-box">
+            <div class="match-item">
+                <h4>✨ 灵魂搭子 (天作之合)</h4>
+                <span id="soulmate">加载中</span>
+            </div>
+            <div class="match-item">
+                <h4>⚠️ 极易互雷 (认知偏差)</h4>
+                <span id="nemesis">加载中</span>
+            </div>
+        </div>
+
+        <div class="action-buttons" id="action-btns">
+            <button class="btn" onclick="downloadImage()">💾 保存专属分析报告 (生成高清图)</button>
+            <button class="btn btn-outline" onclick="location.reload()">重新校准坐标</button>
+        </div>
+
+        <div class="watermark">测评档案编号: <span id="random-id"></span><br>© 测测看文化创意工作室</div>
+    </div>
+</div>
+
+<script>
+    const VALID_PASSCODE = "K9F2X7R4V1M8"; 
+
+    // 25道题
+    const questions = [
+        { q: "周末突然遇到极度心烦的突发状况，你下意识的平替方案是？", options: [
+            { t: "A. 立刻拿出备忘录，列出清晰的解决步骤。", dx: -2, dy: 2 },
+            { t: "B. 关掉手机，一个人安静地思考问题根源。", dx: -2, dy: -2 },
+            { t: "C. 管他的，先点杯奶茶或者去疯狂大采购发泄一下。", dx: 2, dy: 2 },
+            { t: "D. 找个安静的地方听歌/冥想，让负面情绪自己流走。", dx: 2, dy: -2 }
+        ]},
+        { q: "在职场或小组合作中，你最讨厌哪种队友？", options: [
+            { t: "A. 只会画大饼，一到执行就拉垮的人。", dx: -2, dy: 2 },
+            { t: "B. 逻辑混乱，说话抓不到重点的人。", dx: -2, dy: -2 },
+            { t: "C. 墨守成规，什么都要按死规矩来的老古董。", dx: 2, dy: -2 },
+            { t: "D. 毫无边界感，喜欢把私人情绪带到工作里的人。", dx: 2, dy: 2 }
+        ]},
+        { q: "当你买了一件结构极其复杂的网红组装家具，你会：", options: [
+            { t: "A. 严格按照说明书的步骤，一步步对照拼装。", dx: -2, dy: 2 },
+            { t: "B. 先研究一下它的承重结构和设计原理。", dx: -2, dy: -2 },
+            { t: "C. 看一眼成品图，直接上手凭感觉拼，拼错再拆。", dx: 2, dy: 2 },
+            { t: "D. 觉得太麻烦，花钱请个师傅或者干脆放着当摆件。", dx: 2, dy: -2 }
+        ]},
+        { q: "和别人产生争执时，你最擅长的“武器”是：", options: [
+            { t: "A. 用无懈可击的客观事实和证据甩他脸上。", dx: -2, dy: 2 },
+            { t: "B. 冷静地指出对方逻辑里的致命漏洞。", dx: -2, dy: -2 },
+            { t: "C. 四两拨千斤，用阴阳怪气或者直觉直击对方痛点。", dx: 2, dy: -2 },
+            { t: "D. 用极其强烈的情绪感染力让对方退缩。", dx: 2, dy: 2 }
+        ]},
+        { q: "对于“搞钱”这件事，你内心最真实的看法是：", options: [
+            { t: "A. 搞钱是人生的底气，必须有明确的攒钱计划和目标。", dx: -2, dy: 2 },
+            { t: "B. 钱是价值的衡量工具，我更看重赚钱背后的商业逻辑。", dx: -2, dy: -2 },
+            { t: "C. 想搞就搞，往往能靠一个突然的灵感或副业赚到钱。", dx: 2, dy: 2 },
+            { t: "D. 钱够花就行，精神的富足和自由比金钱更重要。", dx: 2, dy: -2 }
+        ]},
+        { q: "让你感到最治愈的“充电”方式是：", options: [
+            { t: "A. 把乱糟糟的房间彻底打扫一遍，按颜色分类收纳。", dx: -2, dy: 2 },
+            { t: "B. 深度阅读一本烧脑的书或者看一部硬核悬疑片。", dx: -2, dy: -2 },
+            { t: "C. 随性来一场说走就走的特种兵旅行，去体验新鲜事物。", dx: 2, dy: 2 },
+            { t: "D. 漫无目的地散步，在脑海里进行天马行空的幻想。", dx: 2, dy: -2 }
+        ]},
+        { q: "在谈恋爱/交友时，你更容易被什么样的人吸引？", options: [
+            { t: "A. 情绪稳定，事事有回应，能解决现实问题的靠谱成年人。", dx: -2, dy: 2 },
+            { t: "B. 智性恋狂喜，能在专业领域降维打击我的人。", dx: -2, dy: -2 },
+            { t: "C. 充满变数，能带我体验各种心跳和刺激的有趣灵魂。", dx: 2, dy: 2 },
+            { t: "D. 能懂我欲言又止的脆弱，产生深刻灵魂共鸣的人。", dx: 2, dy: -2 }
+        ]},
+        { q: "如果要学习一项全新的技能（比如剪辑/烘焙），你的路径是：", options: [
+            { t: "A. 报个系统班，跟着老师按部就班地练。", dx: -2, dy: 2 },
+            { t: "B. 先去知乎/B站把底层理论和干货看透再说。", dx: -2, dy: -2 },
+            { t: "C. 不看教程，自己瞎鼓捣，失败了也觉得好玩。", dx: 2, dy: 2 },
+            { t: "D. 看很多大师的作品找灵感，但在动手前容易拖延。", dx: 2, dy: -2 }
+        ]},
+        { q: "你的房间/办公桌通常的状态是：", options: [
+            { t: "A. 永远保持肉眼可见的整洁，东西用完立刻归位。", dx: -2, dy: 2 },
+            { t: "B. 表面整洁，但抽屉里面可能是有分类的杂乱。", dx: -2, dy: -2 },
+            { t: "C. 看起来很乱，但我知道每一件东西在哪里（乱中有序）。", dx: 2, dy: 2 },
+            { t: "D. 随心所欲，常常找东西靠缘分。", dx: 2, dy: -2 }
+        ]},
+        { q: "面对人生重大的分岔路口（如跳槽/分手），你的决策依据是：", options: [
+            { t: "A. 列出详细的利弊对比表格，算一笔经济账。", dx: -2, dy: 2 },
+            { t: "B. 评估长远的发展趋势和事物发展的底层规律。", dx: -2, dy: -2 },
+            { t: "C. 凭第一直觉，心里哪个选项让我爽，就选哪个。", dx: 2, dy: 2 },
+            { t: "D. 顺其自然，相信宇宙/命运会给出最好的安排。", dx: 2, dy: -2 }
+        ]},
+        { q: "如果人类只剩下一天时间，你会怎么度过？", options: [
+            { t: "A. 把所有的财产、后事安排得明明白白。", dx: -2, dy: 2 },
+            { t: "B. 思考人类灭亡的哲学意义，坦然接受。", dx: -2, dy: -2 },
+            { t: "C. 去平时最想去但不敢去的地方疯狂一把。", dx: 2, dy: 2 },
+            { t: "D. 和最爱的人拥抱在一起，什么都不做。", dx: 2, dy: -2 }
+        ]},
+        { q: "经常让你感到极度内耗的事情是：", options: [
+            { t: "A. 计划好的事情被打乱，或者别人执行力太差。", dx: -2, dy: 2 },
+            { t: "B. 觉得周围的人都很肤浅，找不到精神层面的对话者。", dx: -2, dy: -2 },
+            { t: "C. 冲动做完某件事/说完某句话后，深夜疯狂后悔。", dx: 2, dy: 2 },
+            { t: "D. 共情能力太强，不自觉地吸收了别人的负能量。", dx: 2, dy: -2 }
+        ]},
+        { q: "在群聊里大家讨论一个热点八卦，你通常的反应是：", options: [
+            { t: "A. 充当“辟谣机”，立刻去查证事实真相和数据。", dx: -2, dy: 2 },
+            { t: "B. 站在上帝视角，分析这件事背后的社会学/心理学动机。", dx: -2, dy: -2 },
+            { t: "C. 跟着大伙一起吃瓜、发表情包，烘托气氛。", dx: 2, dy: 2 },
+            { t: "D. 觉得很无聊，静音群聊或者根本不看。", dx: 2, dy: -2 }
+        ]},
+        { q: "如果朋友找你倾诉失恋的痛苦，你会：", options: [
+            { t: "A. 帮她分析前任有多渣，直接甩出“断联”执行手册。", dx: -2, dy: 2 },
+            { t: "B. 理性剖析这段关系的不匹配之处，劝她放下。", dx: -2, dy: -2 },
+            { t: "C. 直接拉她出去喝酒蹦迪吃火锅，开心最重要。", dx: 2, dy: 2 },
+            { t: "D. 静静听她哭，和她一起共情流泪，提供情绪抱抱。", dx: 2, dy: -2 }
+        ]},
+        { q: "你更向往下面哪种理想生活？", options: [
+            { t: "A. 事业有成，财务自由，所有事物都在自己的掌控中。", dx: -2, dy: 2 },
+            { t: "B. 拥有绝对的独立空间，能无忧无虑地研究自己热爱的领域。", dx: -2, dy: -2 },
+            { t: "C. 开一家品味极其独特的买手店或咖啡馆，每天见不同的人。", dx: 2, dy: 2 },
+            { t: "D. 隐居在风景如画的地方，种种花草，不被世俗打扰。", dx: 2, dy: -2 }
+        ]},
+        { q: "别人对你最常见的误解往往是：", options: [
+            { t: "A. 觉得我太冷血、太功利，实际上我只是注重效率。", dx: -2, dy: 2 },
+            { t: "B. 觉得我太傲慢、不好接近，实际上我只是沉浸在自己的世界。", dx: -2, dy: -2 },
+            { t: "C. 觉得我太疯、没定性，实际上我只是讨厌一成不变。", dx: 2, dy: 2 },
+            { t: "D. 觉得我太柔弱或太佛系，实际上我内心极其通透。", dx: 2, dy: -2 }
+        ]},
+        { q: "每天入睡前的那十分钟，你脑子里都在闪过什么？", options: [
+            { t: "A. 强迫症般地复盘今天还有什么事没做，明天的to-do list。", dx: -2, dy: 2 },
+            { t: "B. 一个突然冒出来的深刻问题，甚至越想越精神。", dx: -2, dy: -2 },
+            { t: "C. 脑补各种玛丽苏/大男主剧情，自己是主角。", dx: 2, dy: 2 },
+            { t: "D. 回忆一些微小的美好瞬间，或者一种莫名的空虚感。", dx: 2, dy: -2 }
+        ]},
+        { q: "如何评价自己的拖延症？", options: [
+            { t: "A. 基本没有。说干就干是我的美德。", dx: -2, dy: 2 },
+            { t: "B. 思想的巨人，行动的矮子。想得很完美就是不动手。", dx: -2, dy: -2 },
+            { t: "C. 极其严重。只有在死线前一天晚上，灵感才会突然爆发。", dx: 2, dy: 2 },
+            { t: "D. 我不认为那是拖延，顺应当下的心境比完成任务更重要。", dx: 2, dy: -2 }
+        ]},
+        { q: "在整理照片发朋友圈时，你会：", options: [
+            { t: "A. 精心挑选，排版整齐，配上简短直接的说明。", dx: -2, dy: 2 },
+            { t: "B. 很少发朋友圈，觉得把生活分享给别人看毫无意义。", dx: -2, dy: -2 },
+            { t: "C. 加满滤镜，发一堆好看的图，配上很搞怪的文字。", dx: 2, dy: 2 },
+            { t: "D. 发一些风景或者模糊的局部，配上一句极其感性的歌词。", dx: 2, dy: -2 }
+        ]},
+        { q: "当你面对一次重大的失败或挫折时：", options: [
+            { t: "A. 马上复盘失败的数据，写成经验总结防止下次再犯。", dx: -2, dy: 2 },
+            { t: "B. 把失败视作一种必然的变量，理性分析客观环境的原因。", dx: -2, dy: -2 },
+            { t: "C. 极度崩溃，找朋友大哭一场，但第二天又能满血复活。", dx: 2, dy: 2 },
+            { t: "D. 觉得这一切都是人生的体验，默默消化，甚至觉得有种凄美感。", dx: 2, dy: -2 }
+        ]},
+        { q: "如果你要开始一段长途旅行，你的准备方式是：", options: [
+            { t: "A. 提前半个月做极其详细的Excel攻略，定好每一天的行程。", dx: -2, dy: 2 },
+            { t: "B. 查阅目的地的历史和文化背景，深度了解背后的故事。", dx: -2, dy: -2 },
+            { t: "C. 只买一张机票，到了当地凭借当下的心情随便逛。", dx: 2, dy: 2 },
+            { t: "D. 带上自己最喜欢的书或音乐，风景不重要，换个地方发呆才重要。", dx: 2, dy: -2 }
+        ]},
+        { q: "在社交场合中，你通常的“社交电量”消耗机制是：", options: [
+            { t: "A. 参加有明确目的的局（如拓展人脉）就不累，无效社交极累。", dx: -2, dy: 2 },
+            { t: "B. 遇到能进行深度智力交锋的人就兴奋，闲聊八卦极其耗电。", dx: -2, dy: -2 },
+            { t: "C. 在人多热闹、气氛嗨的局里能吸取能量，变身社牛。", dx: 2, dy: 2 },
+            { t: "D. 只要出门就耗电，最好能隐形，只喜欢一对一深度聊天。", dx: 2, dy: -2 }
+        ]},
+        { q: "你理想中的办公环境或书房是怎样的？", options: [
+            { t: "A. 设备顶级，效率拉满，人体工学椅配多个显示屏的硬核战区。", dx: -2, dy: 2 },
+            { t: "B. 安静得能听见针掉下来的私人图书馆，充满古籍或专业资料。", dx: -2, dy: -2 },
+            { t: "C. 充满潮玩、手办、鲜艳色彩和各种能激发灵感的小物件。", dx: 2, dy: 2 },
+            { t: "D. 阳光充足，有很多绿植，放着轻柔音乐的慵懒角落。", dx: 2, dy: -2 }
+        ]},
+        { q: "如果你能留下一样东西被后人铭记，你希望是：", options: [
+            { t: "A. 一个改变了世界运作效率的庞大商业帝国或专利产品。", dx: -2, dy: 2 },
+            { t: "B. 一套揭示了世界底层真理的永恒理论或公式。", dx: -2, dy: -2 },
+            { t: "C. 一件打破了所有常规、极其震撼的传世艺术品/狂想之作。", dx: 2, dy: 2 },
+            { t: "D. 一段温暖过无数人灵魂的传奇故事或哲学思想。", dx: 2, dy: -2 }
+        ]},
+        { q: "用一个词形容你的灵魂底色，你觉得是：", options: [
+            { t: "A. 坚不可摧的钢。", dx: -2, dy: 2 },
+            { t: "B. 深不见底的海。", dx: -2, dy: -2 },
+            { t: "C. 肆意燃烧的火。", dx: 2, dy: 2 },
+            { t: "D. 捉摸不透的风。", dx: 2, dy: -2 }
+        ]}
+    ];
+
+    let currentQ = 0;
+    let scoreX = 0; 
+    let scoreY = 0; 
+
+    // 输入框动态加横杠
+    document.getElementById('passcode').addEventListener('input', function (e) {
+        document.getElementById('error-msg').classList.remove('show');
+        document.getElementById('passcode').classList.remove('shake');
+        let value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+        if (value.length > 4) value = value.slice(0, 4) + '-' + value.slice(4);
+        if (value.length > 9) value = value.slice(0, 9) + '-' + value.slice(9);
+        e.target.value = value;
+    });
+
+    function checkPasscode() {
+        const inputField = document.getElementById('passcode');
+        const errorMsg = document.getElementById('error-msg');
+        const cleanInput = inputField.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+
+        if (cleanInput === VALID_PASSCODE) { 
+            errorMsg.classList.remove('show');
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('test-screen').style.display = 'block';
+            loadQuestion();
+        } else {
+            errorMsg.classList.add('show');
+            inputField.classList.remove('shake');
+            void inputField.offsetWidth; 
+            inputField.classList.add('shake');
+        }
+    }
+
+    document.getElementById('passcode').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') checkPasscode();
+    });
+
+    function loadQuestion() {
+        if(currentQ >= questions.length) {
+            startLoadingAnimation();
+            return;
+        }
+        
+        const percent = ((currentQ) / questions.length) * 100;
+        document.getElementById('progress-fill').style.width = percent + '%';
+        document.getElementById('progress-text').innerText = `测评进度: ${currentQ + 1} / ${questions.length}`;
+        document.getElementById('question-text').innerText = questions[currentQ].q;
+        
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        questions[currentQ].options.forEach(opt => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            div.innerText = opt.t;
+            div.onclick = () => {
+                scoreX += opt.dx;
+                scoreY += opt.dy;
+                currentQ++;
+                setTimeout(loadQuestion, 150); 
+            };
+            container.appendChild(div);
+        });
+    }
+
+    function startLoadingAnimation() {
+        document.getElementById('test-screen').style.display = 'none';
+        document.getElementById('loading-screen').style.display = 'block';
+        window.scrollTo(0, 0);
+
+        let progress = 0;
+        const fill = document.getElementById('spinner-fill');
+        const statusText = document.getElementById('loading-status');
+        
+        const loadingTexts = [
+            "正在提取六维能力潜意识数据...",
+            "运算认知拓扑坐标系...",
+            "多维比对荣格潜意识人格模型...",
+            "正在生成专属高维解析报告..."
+        ];
+
+        const interval = setInterval(() => {
+            progress += 1.2; 
+            fill.style.width = Math.min(progress, 100) + '%';
+            
+            if (progress > 20 && progress < 50) statusText.innerText = loadingTexts[1];
+            else if (progress >= 50 && progress < 85) statusText.innerText = loadingTexts[2];
+            else if (progress >= 85) statusText.innerText = loadingTexts[3];
+
+            if (progress >= 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    showResult();
+                }, 500);
+            }
+        }, 40); 
+    }
+
+    // 独立封装四象限背景插件，防止全局加载时卡死脚本
+    const quadrantBackgroundPlugin = {
+        id: 'quadrantBackground',
+        beforeDraw(chart) {
+            const { ctx, chartArea: { left, top, right, bottom }, scales: { x, y } } = chart;
+            const midX = x.getPixelForValue(0);
+            const midY = y.getPixelForValue(0);
+            
+            ctx.save();
+            ctx.fillStyle = '#F8F6F1'; ctx.fillRect(left, top, midX - left, midY - top);
+            ctx.fillStyle = '#FFFDF9'; ctx.fillRect(midX, top, right - midX, midY - top);
+            ctx.fillStyle = '#FAF9F6'; ctx.fillRect(left, midY, midX - left, bottom - midY);
+            ctx.fillStyle = '#FFFFFF'; ctx.fillRect(midX, midY, right - midX, bottom - midY);
+
+            ctx.beginPath();
+            ctx.moveTo(left, midY); ctx.lineTo(right, midY);
+            ctx.moveTo(midX, top); ctx.lineTo(midX, bottom);
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = '#EAE1D8';
+            ctx.stroke();
+            ctx.restore();
+        }
+    };
+
+    function showResult() {
+        document.getElementById('result-screen').style.display = 'block';
+        
+        // 确保容器渲染完成后再画图，防止尺寸错乱
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+            document.getElementById('random-id').innerText = "R" + Math.random().toString(10).substr(2, 6);
+
+            let profile = {};
+
+            if (scoreX <= 0 && scoreY > 0) {
+                profile = {
+                    name: "居里夫人型 (Marie Curie)",
+                    title: "人间清醒的「冷酷实干家」",
+                    quote: "“我不相信天上掉馅饼，我只相信我亲手赚到的底气。”",
+                    tags: ["高执行力", "搞钱达人", "拒绝画饼", "慕强心理", "边界感强"],
+                    desc: `
+                        <h4>✨ 你的内核特写：</h4>
+                        <p>你是一个极其罕见的「高维逻辑 × 极强实干」结合体。在大多数人还在迷茫、抱怨或者精神内耗的时候，你已经在低头默默把事情做完了。你看透了人际交往本质上是价值交换，所以你不喜欢没用的社交，极其讨厌别人画大饼。</p>
+                        <h4>💼 日常与搞钱模式：</h4>
+                        <p>在职场中你是最靠谱的基石。只要钱给够，或者目标明确，你的专注力犹如一台推土机。你极其重视“确定性”，喜欢账户里余额上涨带来的安全感，凡事喜欢亲力亲为。</p>
+                        <h4>⚠️ 极易内耗的暗面：</h4>
+                        <p>你最大的内耗来源于“对失控的恐惧”以及“身边人太蠢”。你对细节有强迫症，常常觉得“交给自己不如我自己做”。这导致你很容易陷入长期的过劳状态，甚至显得冷血、不好接近。</p>
+                        <h4>💊 专属自救指南：</h4>
+                        <p>学着给人生“留白”。你要允许世界有灰度，允许别人犯错。定期进行一次没有任何目的性的“废物躺”，因为你的弦绷得太紧了，需要卸载掉那些不属于你的责任感。</p>
+                    `,
+                    soulmate: "牛顿型 (高智感同行者)",
+                    nemesis: "特斯拉型 (容易被对方的跳脱气死)",
+                    radarBase: [95, 98, 40, 60, 35, 45] // 回归旧版稳定的基础分设定
+                };
+            } else if (scoreX <= 0 && scoreY <= 0) {
+                profile = {
+                    name: "牛顿型 (Isaac Newton)",
+                    title: "高智感的「精神独立学者」",
+                    quote: "“热闹是他们的，我只觉得吵闹且降智。”",
+                    tags: ["智性恋", "精神洁癖", "深度思考", "社交隔离", "逻辑怪物"],
+                    desc: `
+                        <h4>✨ 你的内核特写：</h4>
+                        <p>你身上带着一种高冷的“智性美感”。你的大脑是一台极度精密的扫描仪，看待世界喜欢透过现象看本质。你拥有精神洁癖，对低效的沟通和庸俗的八卦有生理性厌恶，因此大部分时间你都喜欢待在自己的小世界里。</p>
+                        <h4>💼 日常与生活模式：</h4>
+                        <p>你极其需要独处空间来给精神充电。你可能是个深度阅读者、小众爱好发烧友，或者某一领域的隐形大佬。你不盲从权威，因为你自己有一套极其严密的判断逻辑。</p>
+                        <h4>⚠️ 极易内耗的暗面：</h4>
+                        <p>极度的理性让你带有一种不自知的“傲慢”。在别人跟你抱怨情绪时，你总是试图讲道理，这常常让你在亲密关系中碰壁。你会觉得世界上懂你的人太少，容易陷入深深的孤独感和精神虚无。</p>
+                        <h4>💊 专属自救指南：</h4>
+                        <p>请记住：“情绪本身，也是一种客观需要处理的数据”。尝试在别人哭泣时，先递上纸巾而不是解决方案。偶尔摘下高智商的面具，拥抱一下人间烟火气，你会发现世界并不可怕。</p>
+                    `,
+                    soulmate: "居里夫人型 (相互尊重边界感)",
+                    nemesis: "爱因斯坦型 (无法理解对方的感性泛滥)",
+                    radarBase: [100, 50, 60, 95, 30, 30]
+                };
+            } else if (scoreX > 0 && scoreY > 0) {
+                profile = {
+                    name: "特斯拉型 (Nikola Tesla)",
+                    title: "天马行空的「疯狂造物主」",
+                    quote: "“规矩就是用来打破的，平庸才是我最大的敌人。”",
+                    tags: ["脑洞大开", "三分钟热度", "极致浪漫", "审美在线", "破局者"],
+                    desc: `
+                        <h4>✨ 你的内核特写：</h4>
+                        <p>你是一个彻头彻尾的浪漫主义极客！你是人群中最有趣、最耀眼的存在。你的思维是跳跃的，脑子里总是有各种各样新鲜、甚至疯狂的点子。你讨厌朝九晚五，讨厌一眼望到头的人生，骨子里充满了对新鲜感的渴望。</p>
+                        <h4>💼 日常与生活模式：</h4>
+                        <p>你可能是个穿搭潮人、经常换爱好的体验派、或者极具创造力的自由职业者。你做事全凭“灵感”和“手感”，状态好的时候效率惊人，能做出让所有人惊艳的成果。</p>
+                        <h4>⚠️ 极易内耗的暗面：</h4>
+                        <p>你最大的痛点是“重度三分钟热度”和“拖延症晚期”。你极度享受从0到1的快感，却极其厌恶从1到100的日常维护。你常常因为开了太多的坑填不完而焦虑，深夜疯狂后悔自己白天的冲动。</p>
+                        <h4>💊 专属自救指南：</h4>
+                        <p>找一个靠谱的“执行型”搭子帮你擦屁股（比如居里夫人型）。另外，试着把大目标拆解成极其细小的阶段，克制住自己永远在追逐下一个新鲜事物的欲望，把一件事做到真正闭环。</p>
+                    `,
+                    soulmate: "爱因斯坦型 (懂你的精神世界)",
+                    nemesis: "牛顿型 (会被对方的死板逼疯)",
+                    radarBase: [45, 80, 95, 55, 100, 75]
+                };
+            } else {
+                profile = {
+                    name: "爱因斯坦型 (Albert Einstein)",
+                    title: "通透灵气的「灵魂哲学家」",
+                    quote: "“我并不在乎这世界怎么运转，我只在乎灵魂的自由。”",
+                    tags: ["共情达人", "高维精神", "人间观察家", "佛系青年", "拖延大师"],
+                    desc: `
+                        <h4>✨ 你的内核特写：</h4>
+                        <p>你是一个披着现代人外衣的古老灵魂。你极具灵气，直觉准得吓人，拥有极其强大的共情能力。物质对你来说永远不是第一位的，你追求的是内心的宁静、美的体验和绝对的精神自由。</p>
+                        <h4>💼 日常与生活模式：</h4>
+                        <p>你身上有一种松弛感，脾气通常很好，是朋友圈里的“倾听者”。比起去大城市内卷，你更渴望有一家自己的小店、或者一份能够随时接触大自然、艺术的工作。你喜欢在脑海里进行无数次浪漫的思想旅行。</p>
+                        <h4>⚠️ 极易内耗的暗面：</h4>
+                        <p>你是一个“超强情绪海绵”，极易吸收别人的负能量导致自己抑郁。同时你有严重的“落地困难症”，行动力极差。现实生活的琐碎（比如记账、打扫、繁琐的手续）常常让你感到崩溃和窒息。</p>
+                        <h4>💊 专属自救指南：</h4>
+                        <p>建立你的“地球防沉迷锚点”。你必须在现实中给自己设定一些最基础的纪律（比如按时吃饭、强制断网睡觉）。另外，学会拒绝别人的情绪倾倒，保护好自己珍贵的能量场。</p>
+                    `,
+                    soulmate: "特斯拉型 (一起天马行空)",
+                    nemesis: "居里夫人型 (对方觉得你不切实际)",
+                    radarBase: [50, 25, 100, 90, 70, 95]
+                };
+            }
+
+            document.getElementById('scientist-name').innerText = profile.name + " | " + profile.title;
+            document.getElementById('scientist-quote').innerText = profile.quote;
+            document.getElementById('scientist-desc').innerHTML = profile.desc;
+            document.getElementById('soulmate').innerText = profile.soulmate;
+            document.getElementById('nemesis').innerText = profile.nemesis;
+
+            const tagsHTML = profile.tags.map(tag => `<span class="tag"># ${tag}</span>`).join('');
+            document.getElementById('tags-container').innerHTML = tagsHTML;
+
+            // --- 恢复被证明100%好用的雷达图“原型+随机”机制 ---
+            const randomize = (val) => Math.min(100, Math.max(10, val + Math.floor(Math.random() * 10) - 5));
+            const finalRadar = profile.radarBase.map(randomize);
+
+            // 1. 完美的正方形散点图
+            const ctxScatter = document.getElementById('scatterChart').getContext('2d');
+            new Chart(ctxScatter, {
+                type: 'scatter',
+                plugins: [quadrantBackgroundPlugin], // 在内部注册插件，不污染全局
+                data: { 
+                    datasets: [{ 
+                        label: '潜意识落点', 
+                        data: [{ x: scoreX, y: scoreY }], 
+                        backgroundColor: '#C1A073', 
+                        borderColor: '#fff', 
+                        borderWidth: 2, 
+                        pointRadius: 8
+                    }] 
+                },
+                options: { 
+                    animation: false, // 关闭动画保证截图百分百清晰
+                    responsive: true,
+                    maintainAspectRatio: false, // 让外层CSS去控制正方形
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } }, 
+                    scales: { 
+                        x: { 
+                            min: -60, max: 60, // 扩大坐标系边界，点绝不会贴到边框上
+                            grid: { display: false }, ticks: { display: false } 
+                        }, 
+                        y: { 
+                            min: -60, max: 60, 
+                            grid: { display: false }, ticks: { display: false } 
+                        } 
+                    } 
+                }
+            });
+
+            // 2. 雷达图
+            const ctxRadar = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['逻辑推演', '现实落地', '灵感顿悟', '精神内耗', '打破常规', '情绪共情'],
+                    datasets: [{ 
+                        data: finalRadar, 
+                        backgroundColor: 'rgba(193, 160, 115, 0.2)', 
+                        borderColor: '#C1A073', 
+                        pointBackgroundColor: '#fff', 
+                        pointBorderColor: '#C1A073', 
+                        borderWidth: 2 
+                    }]
+                },
+                options: { 
+                    animation: false, // 同样关闭动画
+                    responsive: true, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { r: { angleLines: { color: '#EAE1D8' }, grid: { color: '#EAE1D8' }, pointLabels: { color: '#5C5248', font: { size: 12, weight: '500' } }, ticks: { display: false, min: 0, max: 100 } } } 
+                }
+            });
+
+        }, 100); 
+    }
+
+    // 高清一键截图 (修复颜色变淡及防黑边)
+    function downloadImage() {
+        const captureArea = document.getElementById('capture-area');
+        const actionBtns = document.getElementById('action-btns');
+        const originalBtnText = actionBtns.children[0].innerText;
+
+        actionBtns.children[0].innerText = "正在生成高清原图，请稍候...";
+        captureArea.classList.add('capturing'); 
+        
+        setTimeout(() => {
+            actionBtns.style.display = 'none';
+
+            html2canvas(captureArea, {
+                scale: 2, 
+                backgroundColor: "#FDFBF7", 
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                captureArea.classList.remove('capturing');
+                actionBtns.style.display = 'flex';
+                actionBtns.children[0].innerText = originalBtnText;
+
+                const link = document.createElement('a');
+                link.download = `测评档案_${document.getElementById('random-id').innerText}.png`;
+                link.href = canvas.toDataURL("image/png", 1.0);
+                link.click();
+            }).catch(err => {
+                captureArea.classList.remove('capturing');
+                actionBtns.style.display = 'flex';
+                actionBtns.children[0].innerText = originalBtnText;
+                alert("生成图片失败，您可以直接手机截图保存本页。");
+            });
+        }, 300); 
+    }
+</script>
+
+</body>
+</html>
