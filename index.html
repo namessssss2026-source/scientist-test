@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>深度内在原型剖析：你的灵魂科学家</title>
-    <!-- 引入图表库 -->
+    <!-- 图表库 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- 引入一键生成图片库 (html2canvas) -->
+    <!-- 高清截图库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --bg-color: #FDFBF7; /* 奶油暖白底色 */
+            --bg-color: #FDFBF7; 
             --panel-bg: #FFFFFF;
-            --text-main: #4A4036; /* 咖色/深棕色文字 */
+            --text-main: #4A4036; 
             --text-muted: #9BA4B5;
-            --accent: #C1A073; /* 香槟金 */
-            --accent-light: #F4EFE6; /* 极浅的燕麦色背景 */
+            --accent: #C1A073; 
+            --accent-light: #F4EFE6; 
             --border: #EAE1D8;
             --error: #E06C75; 
         }
@@ -44,14 +44,11 @@
             margin-top: 3vh;
             margin-bottom: 5vh;
             border: 1px solid rgba(255,255,255,0.8);
-            animation: fadeIn 0.8s ease-out;
-            position: relative; /* 截图时需要 */
+            position: relative; 
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* 截图时的特殊状态，去掉阴影防止白边 */
+        .capturing { box-shadow: none !important; border: none !important; margin: 0 !important; border-radius: 0 !important;}
 
         h1 { font-size: 22px; text-align: center; font-weight: 600; letter-spacing: 1px; color: var(--text-main); margin-bottom: 6px; }
         .subtitle { font-size: 12px; color: var(--accent); text-align: center; margin-bottom: 35px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500;}
@@ -74,7 +71,6 @@
         .error-msg { color: var(--error); font-size: 13px; min-height: 20px; margin-bottom: 20px; opacity: 0; transition: opacity 0.3s; }
         .error-msg.show { opacity: 1; }
 
-        /* 按钮通用样式 */
         .btn {
             width: 100%; background: var(--text-main); color: #fff; border: none; padding: 16px; 
             border-radius: 12px; font-size: 15px; font-weight: 500; cursor: pointer; 
@@ -99,12 +95,12 @@
         }
         .option:hover, .option:active { background: var(--accent-light); border-color: var(--accent); transform: translateY(-2px); }
 
-        /* 演算等待动画页 */
+        /* 演算等待页 */
         #loading-screen { display: none; text-align: center; padding: 40px 10px; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 15px var(--accent); } 100% { transform: scale(1); opacity: 0.8; } }
         .spinner-box { width: 100%; height: 6px; background: var(--accent-light); border-radius: 4px; overflow: hidden; margin: 35px 0 15px; }
         .spinner-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s linear; border-radius: 4px; }
-        .loading-text { font-size: 16px; color: var(--text-main); font-weight: 600; margin-top: 20px; transition: opacity 0.3s;}
+        .loading-text { font-size: 16px; color: var(--text-main); font-weight: 600; margin-top: 20px;}
         .loading-subtext { font-size: 12px; color: var(--text-muted); }
 
         /* 结果页 */
@@ -157,14 +153,14 @@
         <button class="btn" onclick="checkPasscode()">开始深度测评</button>
         
         <div class="disclaimer">
-            【专业声明】本测评基于多维心理测量学与荣格（Carl Jung）潜意识模型构建，经过20项行为逻辑交叉验证。结果侧重于解析个人的核心驱动力、情绪模式及潜在内耗点，仅供个人深度自我探索与人际关系参考，不构成任何临床医疗诊断依据。
+            【专业声明】本测评基于多维心理测量学与荣格潜意识模型构建，经过25项行为逻辑交叉验证。结果侧重于解析个人的核心驱动力、情绪模式及潜在内耗点，仅供个人深度自我探索与人际关系参考，不构成任何临床医疗诊断依据。
         </div>
     </div>
 
     <!-- 测试页 -->
     <div id="test-screen">
         <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-        <div class="progress-text" id="progress-text">进度: 1 / 20</div>
+        <div class="progress-text" id="progress-text">进度: 1 / 25</div>
         <div class="question" id="question-text">加载中...</div>
         <div id="options-container"></div>
     </div>
@@ -172,7 +168,7 @@
     <!-- 演算动画页 -->
     <div id="loading-screen">
         <div class="login-illustration" style="animation: pulse 1.5s infinite;">✦</div>
-        <div class="loading-text" id="loading-status">正在连接潜意识深层数据...</div>
+        <div class="loading-text" id="loading-status">正在提取六维能力潜意识数据...</div>
         <div class="spinner-box"><div class="spinner-fill" id="spinner-fill"></div></div>
         <div class="loading-subtext">基于非线性动力学模型，多维比对中</div>
     </div>
@@ -190,7 +186,6 @@
         <div class="section-title">你的认知坐标系</div>
         <div class="chart-container">
             <canvas id="scatterChart"></canvas>
-            <p style="text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 10px;">(X轴: 理性逻辑 — 随性直觉 | Y轴: 抽象精神 — 落地执行)</p>
         </div>
 
         <div class="section-title">深度人格解剖档案</div>
@@ -198,7 +193,7 @@
             <!-- 动态注入 -->
         </div>
 
-        <div class="section-title">六维潜能雷达图</div>
+        <div class="section-title">六维潜能雷达图 (真实测算生成)</div>
         <div class="chart-container" style="margin-bottom: 25px;">
             <canvas id="radarChart"></canvas>
         </div>
@@ -215,21 +210,19 @@
             </div>
         </div>
 
-        <!-- 功能按钮区 (截图时会自动隐藏) -->
         <div class="action-buttons" id="action-btns">
             <button class="btn" onclick="downloadImage()">💾 保存专属分析报告 (生成高清图)</button>
             <button class="btn btn-outline" onclick="location.reload()">重新校准坐标</button>
         </div>
 
-        <div class="watermark">测评档案编号: <span id="random-id"></span><br>© 心理学自我探索实验室</div>
+        <div class="watermark">测评档案编号: <span id="random-id"></span><br>© 测测看文化创意工作室</div>
     </div>
 </div>
 
 <script>
-    // 固定长密码
     const VALID_PASSCODE = "K9F2X7R4V1M8"; 
 
-    // 20道题
+    // 25道核心题库
     const questions = [
         { q: "周末突然遇到极度心烦的突发状况，你下意识的平替方案是？", options: [
             { t: "A. 立刻拿出备忘录，列出清晰的解决步骤。", dx: -2, dy: 2 },
@@ -345,6 +338,36 @@
             { t: "C. 加满滤镜，发一堆好看的图，配上很搞怪的文字。", dx: 2, dy: 2 },
             { t: "D. 发一些风景或者模糊的局部，配上一句极其感性的歌词。", dx: 2, dy: -2 }
         ]},
+        { q: "当你面对一次重大的失败或挫折时：", options: [
+            { t: "A. 马上复盘失败的数据，写成经验总结防止下次再犯。", dx: -2, dy: 2 },
+            { t: "B. 把失败视作一种必然的变量，理性分析客观环境的原因。", dx: -2, dy: -2 },
+            { t: "C. 极度崩溃，找朋友大哭一场，但第二天又能满血复活。", dx: 2, dy: 2 },
+            { t: "D. 觉得这一切都是人生的体验，默默消化，甚至觉得有种凄美感。", dx: 2, dy: -2 }
+        ]},
+        { q: "如果你要开始一段长途旅行，你的准备方式是：", options: [
+            { t: "A. 提前半个月做极其详细的Excel攻略，定好每一天的行程。", dx: -2, dy: 2 },
+            { t: "B. 查阅目的地的历史和文化背景，深度了解背后的故事。", dx: -2, dy: -2 },
+            { t: "C. 只买一张机票，到了当地凭借当下的心情随便逛。", dx: 2, dy: 2 },
+            { t: "D. 带上自己最喜欢的书或音乐，风景不重要，换个地方发呆才重要。", dx: 2, dy: -2 }
+        ]},
+        { q: "在社交场合中，你通常的“社交电量”消耗机制是：", options: [
+            { t: "A. 参加有明确目的的局（如拓展人脉）就不累，无效社交极累。", dx: -2, dy: 2 },
+            { t: "B. 遇到能进行深度智力交锋的人就兴奋，闲聊八卦极其耗电。", dx: -2, dy: -2 },
+            { t: "C. 在人多热闹、气氛嗨的局里能吸取能量，变身社牛。", dx: 2, dy: 2 },
+            { t: "D. 只要出门就耗电，最好能隐形，只喜欢一对一深度聊天。", dx: 2, dy: -2 }
+        ]},
+        { q: "你理想中的办公环境或书房是怎样的？", options: [
+            { t: "A. 设备顶级，效率拉满，人体工学椅配多个显示屏的硬核战区。", dx: -2, dy: 2 },
+            { t: "B. 安静得能听见针掉下来的私人图书馆，充满古籍或专业资料。", dx: -2, dy: -2 },
+            { t: "C. 充满潮玩、手办、鲜艳色彩和各种能激发灵感的小物件。", dx: 2, dy: 2 },
+            { t: "D. 阳光充足，有很多绿植，放着轻柔音乐的慵懒角落。", dx: 2, dy: -2 }
+        ]},
+        { q: "如果你能留下一样东西被后人铭记，你希望是：", options: [
+            { t: "A. 一个改变了世界运作效率的庞大商业帝国或专利产品。", dx: -2, dy: 2 },
+            { t: "B. 一套揭示了世界底层真理的永恒理论或公式。", dx: -2, dy: -2 },
+            { t: "C. 一件打破了所有常规、极其震撼的传世艺术品/狂想之作。", dx: 2, dy: 2 },
+            { t: "D. 一段温暖过无数人灵魂的传奇故事或哲学思想。", dx: 2, dy: -2 }
+        ]},
         { q: "用一个词形容你的灵魂底色，你觉得是：", options: [
             { t: "A. 坚不可摧的钢。", dx: -2, dy: 2 },
             { t: "B. 深不见底的海。", dx: -2, dy: -2 },
@@ -390,7 +413,6 @@
 
     function loadQuestion() {
         if(currentQ >= questions.length) {
-            // 所有问题答完，进入"加载/演算"动画环节
             startLoadingAnimation();
             return;
         }
@@ -416,7 +438,6 @@
         });
     }
 
-    // 新增：沉浸式演算加载动画
     function startLoadingAnimation() {
         document.getElementById('test-screen').style.display = 'none';
         document.getElementById('loading-screen').style.display = 'block';
@@ -426,17 +447,15 @@
         const fill = document.getElementById('spinner-fill');
         const statusText = document.getElementById('loading-status');
         
-        // 动态加载文案
         const loadingTexts = [
             "正在提取六维能力潜意识数据...",
-            "运算认知拓扑系坐标系...",
+            "运算认知拓扑坐标系...",
             "多维比对荣格潜意识人格模型...",
             "正在生成专属高维解析报告..."
         ];
 
-        // 定时器模拟进度
         const interval = setInterval(() => {
-            progress += 1.2; // 控制进度条速度
+            progress += 1.2; 
             fill.style.width = Math.min(progress, 100) + '%';
             
             if (progress > 20 && progress < 50) statusText.innerText = loadingTexts[1];
@@ -447,11 +466,49 @@
                 clearInterval(interval);
                 setTimeout(() => {
                     document.getElementById('loading-screen').style.display = 'none';
-                    showResult(); // 动画结束，展示真实结果
+                    showResult();
                 }, 500);
             }
-        }, 40); // 约耗时 3.5 秒
+        }, 40); 
     }
+
+    // Chart.js 自定义插件：画出绝美的四象限底色
+    const quadrantBackgroundPlugin = {
+        id: 'quadrantBackground',
+        beforeDraw(chart) {
+            const { ctx, chartArea: { left, top, right, bottom }, scales: { x, y } } = chart;
+            const midX = x.getPixelForValue(0);
+            const midY = y.getPixelForValue(0);
+            ctx.save();
+            
+            // 左上 (理智现实) - 偏冷灰
+            ctx.fillStyle = '#f3f1ed';
+            ctx.fillRect(left, top, midX - left, midY - top);
+            
+            // 右上 (直觉现实) - 偏暖金
+            ctx.fillStyle = '#fdfaf5';
+            ctx.fillRect(midX, top, right - midX, midY - top);
+            
+            // 左下 (理智精神) - 偏冷白
+            ctx.fillStyle = '#faf9f7';
+            ctx.fillRect(left, midY, midX - left, bottom - midY);
+            
+            // 右下 (直觉精神) - 偏暖白
+            ctx.fillStyle = '#fefdfa';
+            ctx.fillRect(midX, midY, right - midX, bottom - midY);
+
+            // 画中心十字粗线
+            ctx.beginPath();
+            ctx.moveTo(left, midY); ctx.lineTo(right, midY);
+            ctx.moveTo(midX, top); ctx.lineTo(midX, bottom);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#D1C8C0';
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    };
+    Chart.register(quadrantBackgroundPlugin);
 
     function showResult() {
         document.getElementById('result-screen').style.display = 'block';
@@ -478,8 +535,7 @@
                     <p>学着给人生“留白”。你要允许世界有灰度，允许别人犯错。定期进行一次没有任何目的性的“废物躺”，因为你的弦绷得太紧了，需要卸载掉那些不属于你的责任感。</p>
                 `,
                 soulmate: "牛顿型 (高智感同行者)",
-                nemesis: "特斯拉型 (容易被对方的跳脱气死)",
-                radar: [95, 98, 40, 60, 35, 45]
+                nemesis: "特斯拉型 (容易被对方的跳脱气死)"
             };
         } else if (scoreX <= 0 && scoreY <= 0) {
             profile = {
@@ -498,8 +554,7 @@
                     <p>请记住：“情绪本身，也是一种客观需要处理的数据”。尝试在别人哭泣时，先递上纸巾而不是解决方案。偶尔摘下高智商的面具，拥抱一下人间烟火气，你会发现世界并不可怕。</p>
                 `,
                 soulmate: "居里夫人型 (相互尊重边界感)",
-                nemesis: "爱因斯坦型 (无法理解对方的感性泛滥)",
-                radar: [100, 50, 60, 95, 30, 30]
+                nemesis: "爱因斯坦型 (无法理解对方的感性泛滥)"
             };
         } else if (scoreX > 0 && scoreY > 0) {
             profile = {
@@ -518,8 +573,7 @@
                     <p>找一个靠谱的“执行型”搭子帮你擦屁股（比如居里夫人型）。另外，试着把大目标拆解成极其细小的阶段，克制住自己永远在追逐下一个新鲜事物的欲望，把一件事做到真正闭环。</p>
                 `,
                 soulmate: "爱因斯坦型 (懂你的精神世界)",
-                nemesis: "牛顿型 (会被对方的死板逼疯)",
-                radar: [45, 80, 95, 55, 100, 75]
+                nemesis: "牛顿型 (会被对方的死板逼疯)"
             };
         } else {
             profile = {
@@ -538,8 +592,7 @@
                     <p>建立你的“地球防沉迷锚点”。你必须在现实中给自己设定一些最基础的纪律（比如按时吃饭、强制断网睡觉）。另外，学会拒绝别人的情绪倾倒，保护好自己珍贵的能量场。</p>
                 `,
                 soulmate: "特斯拉型 (一起天马行空)",
-                nemesis: "居里夫人型 (对方觉得你不切实际)",
-                radar: [50, 25, 100, 90, 70, 95]
+                nemesis: "居里夫人型 (对方觉得你不切实际)"
             };
         }
 
@@ -552,65 +605,118 @@
         const tagsHTML = profile.tags.map(tag => `<span class="tag"># ${tag}</span>`).join('');
         document.getElementById('tags-container').innerHTML = tagsHTML;
 
+        // 【核心算法】真实计算六维雷达图 (基于25题的真实得分，不再是硬编码和随机数)
+        // 25题满分理论范围：-50 到 50
+        const absX = Math.abs(scoreX);
+        const absY = Math.abs(scoreY);
+        
+        let logicScore = Math.round(50 + (scoreX < 0 ? absX : -absX) * 0.8);
+        let execScore = Math.round(50 + (scoreY > 0 ? absY : -absY) * 0.8);
+        let intuitScore = Math.round(50 + (scoreX > 0 ? absX : -absX) * 0.8);
+        let abstractScore = Math.round(50 + (scoreY < 0 ? absY : -absY) * 0.8);
+        let ruleBreakScore = Math.round(40 + (scoreX + scoreY) * 0.6);
+        let empathyScore = Math.round(40 + (scoreX - scoreY) * 0.6);
+
+        // 规范化在 20 - 98 之间，显得真实
+        const clamp = (val) => Math.max(20, Math.min(98, val));
+        const finalRadar = [
+            clamp(logicScore), clamp(execScore), clamp(intuitScore), 
+            clamp(abstractScore), clamp(ruleBreakScore), clamp(empathyScore)
+        ];
+
+        // 关闭所有图表的默认动画，确保 html2canvas 截图时图表已经完全渲染，杜绝“变淡、变模糊”！
+        Chart.defaults.animation = false;
         Chart.defaults.color = '#8C7B6B';
         Chart.defaults.font.family = "'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif";
 
         const ctxScatter = document.getElementById('scatterChart').getContext('2d');
         new Chart(ctxScatter, {
             type: 'scatter',
-            data: { datasets: [{ label: '你的认知落点', data: [{ x: scoreX, y: scoreY }], backgroundColor: '#C1A073', borderColor: '#fff', borderWidth: 2, pointRadius: 8, pointHoverRadius: 10 }] },
-            options: { responsive: true, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { min: -40, max: 40, grid: { color: (ctx) => ctx.tick.value === 0 ? '#EAE1D8' : '#f7f4f0', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 } }, y: { min: -40, max: 40, grid: { color: (ctx) => ctx.tick.value === 0 ? '#EAE1D8' : '#f7f4f0', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 } } } }
+            data: { 
+                datasets: [{ 
+                    label: '你的认知落点', 
+                    data: [{ x: scoreX, y: scoreY }], 
+                    backgroundColor: '#C1A073', 
+                    borderColor: '#fff', 
+                    borderWidth: 2, 
+                    pointRadius: 8
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }, 
+                scales: { 
+                    x: { 
+                        min: -50, max: 50, 
+                        title: { display: true, text: '逻辑理智 ◀ 核心驱动方式 ▶ 随性直觉', color: '#B3AAA0', font: {size: 11} },
+                        grid: { display: false }, ticks: { display: false } 
+                    }, 
+                    y: { 
+                        min: -50, max: 50, 
+                        title: { display: true, text: '精神抽象 ◀ 行为落地模式 ▶ 现实执行', color: '#B3AAA0', font: {size: 11} },
+                        grid: { display: false }, ticks: { display: false } 
+                    } 
+                } 
+            }
         });
-
-        const randomize = (val) => Math.min(100, Math.max(10, val + Math.floor(Math.random() * 10) - 5));
-        const finalRadar = profile.radar.map(randomize);
 
         const ctxRadar = document.getElementById('radarChart').getContext('2d');
         new Chart(ctxRadar, {
             type: 'radar',
             data: {
                 labels: ['逻辑推演', '现实落地', '灵感顿悟', '精神内耗', '打破常规', '情绪共情'],
-                datasets: [{ data: finalRadar, backgroundColor: 'rgba(193, 160, 115, 0.2)', borderColor: '#C1A073', pointBackgroundColor: '#fff', pointBorderColor: '#C1A073', borderWidth: 2 }]
+                datasets: [{ 
+                    data: finalRadar, 
+                    backgroundColor: 'rgba(193, 160, 115, 0.2)', 
+                    borderColor: '#C1A073', 
+                    pointBackgroundColor: '#fff', 
+                    pointBorderColor: '#C1A073', 
+                    borderWidth: 2 
+                }]
             },
-            options: { responsive: true, plugins: { legend: { display: false } }, scales: { r: { angleLines: { color: '#EAE1D8' }, grid: { color: '#EAE1D8' }, pointLabels: { color: '#5C5248', font: { size: 12, weight: '500' } }, ticks: { display: false, min: 0, max: 100 } } } }
+            options: { 
+                responsive: true, 
+                plugins: { legend: { display: false } }, 
+                scales: { r: { angleLines: { color: '#EAE1D8' }, grid: { color: '#EAE1D8' }, pointLabels: { color: '#5C5248', font: { size: 12, weight: '500' } }, ticks: { display: false, min: 0, max: 100 } } } 
+            }
         });
     }
 
-    // 新增：一键保存为高清长图的功能
+    // 高清一键截图功能 (修复了颜色变淡的问题)
     function downloadImage() {
         const captureArea = document.getElementById('capture-area');
         const actionBtns = document.getElementById('action-btns');
         const originalBtnText = actionBtns.children[0].innerText;
 
-        // 1. 修改按钮文字提示正在生成
         actionBtns.children[0].innerText = "正在生成高清原图，请稍候...";
         
-        // 2. 为了保证截图完美，短暂隐藏底部不需要的按钮
+        // 关键修复：赋予背景绝对的颜色并去掉阴影防止白边
+        captureArea.classList.add('capturing');
+        
         setTimeout(() => {
             actionBtns.style.display = 'none';
 
-            // 3. 调用 html2canvas 截图整个容器
             html2canvas(captureArea, {
-                scale: 2, // 2倍超清分辨率，发朋友圈不糊
-                backgroundColor: "#FDFBF7", // 强制底色防止透明黑边
-                useCORS: true 
+                scale: 2, // 2倍高清
+                backgroundColor: "#FDFBF7", // 强制填充实色背景，解决透明变淡问题
+                useCORS: true,
+                logging: false
             }).then(canvas => {
-                // 4. 恢复按钮显示
+                captureArea.classList.remove('capturing');
                 actionBtns.style.display = 'flex';
                 actionBtns.children[0].innerText = originalBtnText;
 
-                // 5. 触发浏览器下载
                 const link = document.createElement('a');
-                link.download = `潜意识分析报告_${document.getElementById('random-id').innerText}.png`;
-                link.href = canvas.toDataURL("image/png");
+                link.download = `测评档案_${document.getElementById('random-id').innerText}.png`;
+                link.href = canvas.toDataURL("image/png", 1.0);
                 link.click();
             }).catch(err => {
-                console.error("生成图片失败", err);
+                captureArea.classList.remove('capturing');
                 actionBtns.style.display = 'flex';
                 actionBtns.children[0].innerText = originalBtnText;
-                alert("由于浏览器限制保存失败，您可以直接手机截图保存本页。");
+                alert("生成图片失败，您可以直接手机截图保存本页。");
             });
-        }, 300); // 留一点时间让浏览器重绘隐藏按钮
+        }, 300); 
     }
 </script>
 
