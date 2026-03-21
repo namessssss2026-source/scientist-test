@@ -3,295 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>深度人格原型剖析：你的内在科学家</title>
+    <title>高维认知拓扑图谱：你的内在科学家原型</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #2c3e50;
-            --accent: #d4af37; /* 高级金 */
-            --bg: #f9f9f9;
-            --text: #333;
+            --bg-color: #0f172a; /* 深邃夜空蓝 */
+            --panel-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #fbbf24; /* 高级金 */
+            --accent-glow: rgba(251, 191, 36, 0.3);
+            --border: rgba(255, 255, 255, 0.1);
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, transparent 70%);
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 500px;
-            width: 100%;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            padding: 30px;
-            box-sizing: border-box;
-        }
-        h1 { font-size: 22px; color: var(--primary); text-align: center; margin-bottom: 10px; }
-        p.subtitle { color: #7f8c8d; font-size: 14px; text-align: center; margin-bottom: 30px; }
-        
-        /* 密码页 */
-        #login-screen { text-align: center; }
-        input[type="text"] {
-            width: 80%; padding: 12px; margin: 20px 0;
-            border: 1px solid #ddd; border-radius: 8px;
-            font-size: 16px; text-align: center; letter-spacing: 2px;
-        }
-        button {
-            background-color: var(--primary); color: white;
-            border: none; padding: 14px 40px; border-radius: 30px;
-            font-size: 16px; cursor: pointer; transition: 0.3s;
-            width: 80%;
-        }
-        button:hover { background-color: var(--accent); }
-        .disclaimer {
-            font-size: 11px; color: #aaa; margin-top: 30px; text-align: justify;
+            align-items: flex-start; /* 改为顶部对齐，方便滚动 */
+            padding: 20px;
             line-height: 1.6;
+            overflow-x: hidden;
         }
+
+        .container {
+            width: 100%;
+            max-width: 540px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-top: 2vh;
+            margin-bottom: 5vh;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 24px; text-align: center; font-weight: 600; letter-spacing: 2px; margin-bottom: 8px; color: var(--accent); }
+        .subtitle { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 40px; letter-spacing: 1px; }
+
+        /* 登录页 */
+        #login-screen { text-align: center; }
+        .input-group { margin: 30px 0; }
+        input[type="text"] {
+            width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+            color: var(--accent); padding: 16px; border-radius: 12px;
+            font-size: 18px; text-align: center; letter-spacing: 3px; font-family: monospace;
+            outline: none; transition: 0.3s;
+        }
+        input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        .btn {
+            width: 100%; background: var(--text-main); color: var(--bg-color);
+            border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: 0.3s; margin-bottom: 20px; letter-spacing: 1px;
+        }
+        .btn:hover { background: var(--accent); }
+        .disclaimer { font-size: 11px; color: #64748b; text-align: justify; line-height: 1.8; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 20px;}
 
         /* 测试页 */
         #test-screen { display: none; }
-        .progress { font-size: 14px; color: #95a5a6; margin-bottom: 20px; }
-        .question { font-size: 18px; font-weight: bold; margin-bottom: 20px; line-height: 1.5; }
+        .progress-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
+        .progress-text { font-size: 12px; color: var(--text-muted); text-align: right; margin-top: -20px; margin-bottom: 20px; font-family: monospace;}
+        .question { font-size: 19px; font-weight: 500; margin-bottom: 30px; line-height: 1.5; }
         .option {
-            background: #f1f2f6; padding: 15px; border-radius: 10px;
-            margin-bottom: 15px; cursor: pointer; transition: 0.2s;
-            font-size: 15px; border: 2px solid transparent;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            padding: 18px 20px; border-radius: 12px; margin-bottom: 15px; cursor: pointer;
+            transition: all 0.2s; font-size: 15px; display: flex; align-items: center;
         }
-        .option:hover, .option:active { border-color: var(--primary); background: #e8ecf1; }
+        .option:hover, .option:active { background: rgba(251, 191, 36, 0.1); border-color: var(--accent); transform: translateX(5px); }
 
         /* 结果页 */
-        #result-screen { display: none; text-align: center; }
-        .result-title { font-size: 24px; color: var(--accent); font-weight: bold; margin: 20px 0 5px; }
-        .result-subtitle { font-size: 16px; color: var(--primary); margin-bottom: 20px; }
-        .desc { font-size: 14px; color: #555; text-align: justify; line-height: 1.8; margin-bottom: 30px; }
-        canvas { max-width: 100%; margin-bottom: 20px; }
-        .watermark { font-size: 12px; color: #ccc; margin-top: 20px; }
+        #result-screen { display: none; }
+        .report-header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .result-title { font-size: 28px; color: var(--accent); font-weight: bold; margin: 10px 0; letter-spacing: 2px;}
+        .result-subtitle { font-size: 16px; color: var(--text-main); font-weight: 300; letter-spacing: 1px; }
+        
+        .section-title { font-size: 14px; color: var(--accent); margin: 30px 0 15px; border-left: 3px solid var(--accent); padding-left: 10px; letter-spacing: 1px; }
+        .desc-box { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; font-size: 14px; color: #cbd5e1; text-align: justify; margin-bottom: 20px; }
+        .desc-box p { margin-bottom: 10px; }
+        .desc-box p:last-child { margin-bottom: 0; }
+        
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        .tag { background: rgba(251, 191, 36, 0.15); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 12px; border: 1px solid rgba(251, 191, 36, 0.3);}
+        
+        .chart-container { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border);}
+        
+        .match-box { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 30px;}
+        .match-item { flex: 1; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border);}
+        .match-item h4 { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+        .match-item span { font-size: 14px; color: var(--text-main); font-weight: bold; }
+        
+        .watermark { font-size: 12px; color: rgba(255,255,255,0.2); text-align: center; margin-top: 30px; font-family: monospace;}
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="main-container">
     <!-- 登录页 -->
     <div id="login-screen">
-        <h1>内在科学家原型图谱</h1>
-        <p class="subtitle">深度潜意识与认知维度测评系统 v2.4</p>
-        <p style="font-size: 14px; color: #666;">请输入授权访问密钥：</p>
-        <input type="text" id="passcode" placeholder="输入密钥">
-        <button onclick="checkPasscode()">开启测评</button>
+        <h1>高维认知拓扑图谱</h1>
+        <p class="subtitle">DEEP COGNITIVE ARCHETYPE SYSTEM v3.0</p>
+        
+        <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;">请输入您的12位系统授权密钥</div>
+        <div class="input-group">
+            <input type="text" id="passcode" placeholder="XXXX-XXXX-XXXX" maxlength="14">
+        </div>
+        <button class="btn" onclick="checkPasscode()">解密我的潜意识坐标</button>
+        
         <div class="disclaimer">
-            【免责申明】本测评基于多维心理物理学模型与荣格人格原型理论构建，结合非线性算法得出认知倾向图谱。测评结果仅代表特定维度下的潜意识投影，不构成任何临床心理学诊断、医疗建议或人生决定性指导。测试者需知悉本系统仅作高阶自我认知探索及研究参考之用。
+            [ 系统声明 ] 本认知拓扑测试基于非线性动力学模型与荣格（Carl Jung）潜意识原型理论构建。系统提取的用户数据维度包含：逻辑颗粒度、直觉跳跃性、现实锚固力与抽象延展力。生成报告具有高度个人特异性，禁止盗用或作为临床心理诊断依据。最终解释权归深空心理研究中心所有。
         </div>
     </div>
 
     <!-- 测试页 -->
     <div id="test-screen">
-        <div class="progress" id="progress">1 / 15</div>
-        <div class="question" id="question-text">问题加载中...</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-text" id="progress-text">DATA SYNC: 1 / 15</div>
+        <div class="question" id="question-text">加载中...</div>
         <div id="options-container"></div>
     </div>
 
     <!-- 结果页 -->
     <div id="result-screen">
-        <h1>你的认知坐标系</h1>
-        <canvas id="resultChart"></canvas>
-        <div class="result-title" id="scientist-name">科学家名字</div>
-        <div class="result-subtitle" id="scientist-title">称号</div>
-        <div class="desc" id="scientist-desc">描述...</div>
-        <button onclick="location.reload()">重新测试</button>
-        <div class="watermark">© 深度自我探索研究所</div>
+        <div class="report-header">
+            <div class="result-subtitle">你的内在意识投射为</div>
+            <div class="result-title" id="scientist-name">加载中</div>
+            <div style="color: var(--text-muted); font-size: 13px; font-style: italic;" id="scientist-quote">"引语加载中"</div>
+        </div>
+
+        <div class="tags" id="tags-container"></div>
+
+        <div class="section-title">▍ 认知拓扑坐标</div>
+        <div class="chart-container">
+            <canvas id="scatterChart"></canvas>
+            <p style="text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 10px;">(X轴: 数据理性—直觉灵感 | Y轴: 抽象理论—现实重构)</p>
+        </div>
+
+        <div class="section-title">▍ 六维能力雷达</div>
+        <div class="chart-container">
+            <canvas id="radarChart"></canvas>
+        </div>
+
+        <div class="section-title">▍ 深度人格解构报告</div>
+        <div class="desc-box" id="scientist-desc">
+            <!-- 动态注入 -->
+        </div>
+
+        <div class="section-title">▍ 社交力学匹配度</div>
+        <div class="match-box">
+            <div class="match-item">
+                <h4>共振同盟 (灵魂契合)</h4>
+                <span id="soulmate">加载中</span>
+            </div>
+            <div class="match-item">
+                <h4>熵增宿敌 (认知冲突)</h4>
+                <span id="nemesis">加载中</span>
+            </div>
+        </div>
+
+        <button class="btn" onclick="location.reload()" style="margin-top: 10px;">重新校准坐标</button>
+        <div class="watermark">SYS-ID: <span id="random-id"></span> | © DEEP SPACE INSIGHTS</div>
     </div>
 </div>
 
 <script>
-    // 固定的授权码（所有用户通用，小红书发货时发这个）
-    const SECRET_CODE = "SCI-9982"; 
+    // ---------------------------------------------------------
+    // 核心密钥设置 (发给客户的就是这个，必须是这12个字符)
+    // ---------------------------------------------------------
+    const VALID_PASSCODE = "K9F2X7R4V1M8"; 
 
-    // 问题库 (15道题显得足够专业)
-    // dx: X轴得分 (负数=逻辑/数据, 正数=直觉/灵感)
-    // dy: Y轴得分 (负数=理论/抽象, 正数=实践/现实)
     const questions = [
-        { q: "面对一个复杂到几乎无解的问题，你通常的第一直觉是？", options: [
-            { t: "把它拆解成无数个小模块，逐个分析数据", dx: -2, dy: 0 },
-            { t: "放空大脑，等待一个突如其来的‘灵光一闪’", dx: 2, dy: 0 }
+        { q: "面对一个几乎无解的烂摊子，你潜意识的第一反应是：", options: [
+            { t: "寻找线头，把它拆解成无数个可控的小模块。", dx: -2, dy: 0 },
+            { t: "跳出当前框架，寻找能一击毙命的降维打击方案。", dx: 2, dy: 0 }
         ]},
-        { q: "当你买了一件结构极其复杂的宜家家具，你会：", options: [
-            { t: "严格按照说明书，一步一步组装", dx: -1, dy: -1 },
-            { t: "看一眼成品图，直接上手凭感觉拼", dx: 1, dy: 2 }
+        { q: "当获取到一个全新的复杂概念时，你倾向于：", options: [
+            { t: "必须搞懂它底层的推导公式和绝对真理。", dx: 0, dy: -2 },
+            { t: "马上思考这玩意儿能在现实中造出什么新东西。", dx: 0, dy: 2 }
         ]},
-        { q: "你更向往哪种探索世界的方式？", options: [
-            { t: "在安静的书房里推导宇宙的终极真理", dx: 0, dy: -2 },
-            { t: "在充满试管和仪器的实验室里亲手创造反应", dx: 0, dy: 2 }
+        { q: "如果你拥有一项超自然能力，你希望是：", options: [
+            { t: "一眼看穿世间万物运转的底层代码。", dx: -2, dy: -1 },
+            { t: "双手能够凭空捏造、改变物质的物理形态。", dx: 1, dy: 2 }
         ]},
-        { q: "与人交流时，最让你感到疲惫的是：", options: [
-            { t: "对方逻辑混乱，没有事实依据", dx: -2, dy: 0 },
-            { t: "对方过于死板，没有想象空间", dx: 2, dy: 0 }
+        { q: "与人深度交流时，最让你感到绝望的是：", options: [
+            { t: "对方逻辑碎裂，充满情感宣泄却毫无事实依据。", dx: -2, dy: 0 },
+            { t: "对方极其死板，被规则框死，毫无想象力空间。", dx: 2, dy: 0 }
         ]},
-        { q: "如果你拥有一项超能力，你希望是：", options: [
-            { t: "看透万物运转的底层代码和规律", dx: -1, dy: -2 },
-            { t: "用双手直接改变物质的形态", dx: 1, dy: 2 }
+        { q: "阅读一本小说或看一部电影，你最容易被什么击中？", options: [
+            { t: "严密无bug、环环相扣的极致烧脑推演。", dx: -2, dy: 0 },
+            { t: "充满隐喻、打破常规的超现实狂想设定。", dx: 2, dy: 0 }
         ]},
-        { q: "你的桌面/房间通常的状态是：", options: [
-            { t: "有一套自己才懂的‘乱中有序’系统", dx: 2, dy: 0 },
-            { t: "分类明确，追求极致的整洁与秩序", dx: -2, dy: 0 }
+        { q: "如果要迅速掌握一门硬核新技能，你的路径是：", options: [
+            { t: "啃透最权威的理论基石，绝不留下知识盲区。", dx: 0, dy: -2 },
+            { t: "不看说明书，直接上手试错，在血泪中总结。", dx: 0, dy: 2 }
         ]},
-        { q: "在团队合作中，你通常扮演的角色是：", options: [
-            { t: "提出极具前瞻性和颠覆性的点子", dx: 2, dy: -1 },
-            { t: "把天马行空的想法落地为可执行的方案", dx: -1, dy: 2 }
+        { q: "当你的核心观点遭到权威人士的严厉质疑时：", options: [
+            { t: "冷静甩出无法辩驳的数据和实验结果进行绝杀。", dx: -1, dy: 1 },
+            { t: "内心冷笑，真理往往掌握在少数人手里，时间会证明。", dx: 1, dy: -1 }
         ]},
-        { q: "阅读一本小说或看一部电影，你最容易被什么打动？", options: [
-            { t: "严密无bug的烧脑悬疑逻辑", dx: -2, dy: 0 },
-            { t: "充满隐喻、打破常规的超现实设定", dx: 2, dy: 0 }
+        { q: "你如何定义“规则”这个词？", options: [
+            { t: "维持任何复杂系统免于崩溃的绝对基石。", dx: -2, dy: 0 },
+            { t: "旧时代遗留的枷锁，就是用来被打破和重构的。", dx: 2, dy: 0 }
         ]},
-        { q: "如果要学习一门新技能，你的方法是：", options: [
-            { t: "先看书掌握所有的理论基础", dx: 0, dy: -2 },
-            { t: "不管那么多，直接动手试错", dx: 0, dy: 2 }
+        { q: "对待高风险，你的真实态度是：", options: [
+            { t: "只要经过极其精密的计算，风险就是可控的数学题。", dx: -2, dy: 0 },
+            { t: "高维度的回报必然伴随极度危险，凭直觉直接冲。", dx: 2, dy: 0 }
         ]},
-        { q: "当你的观点被权威质疑时，你的反应是：", options: [
-            { t: "拿出坚实的数据和实验结果打脸对方", dx: -1, dy: 2 },
-            { t: "懒得解释，真理在未来会证明我是对的", dx: 2, dy: -1 }
+        { q: "深夜独处时，你的大脑最常运行的程序是：", options: [
+            { t: "复盘当天的细节，或者规划未来的具体执行路径。", dx: -1, dy: 2 },
+            { t: "进行天马行空的思想实验，思考宇宙或人性的终极命题。", dx: 1, dy: -2 }
         ]},
-        { q: "你如何看待‘规则’？", options: [
-            { t: "规则是维持系统稳定运行的必要基石", dx: -2, dy: 0 },
-            { t: "规则就是用来被打破和重构的", dx: 2, dy: 0 }
+        { q: "你的个人空间（书桌/电脑桌面）通常呈现什么状态？", options: [
+            { t: "分类极其明确，追求变态级别的整洁与秩序。", dx: -2, dy: 0 },
+            { t: "表面混乱，但拥有一套只有自己懂的“乱中有序”法则。", dx: 2, dy: 0 }
         ]},
-        { q: "周末的下午，你更愿意：", options: [
-            { t: "做手账、烘焙、拼乐高等需要动手的事情", dx: 0, dy: 2 },
-            { t: "看哲学/科幻书籍，在脑海中进行思想实验", dx: 0, dy: -2 }
+        { q: "在团队协作中，你最不可替代的价值是：", options: [
+            { t: "将天马行空的PPT落地为极其严密的执行SOP。", dx: -1, dy: 2 },
+            { t: "在所有人都思维枯竭时，提出石破天惊的颠覆性点子。", dx: 2, dy: -1 }
         ]},
-        { q: "对待风险，你的态度是：", options: [
-            { t: "经过精密计算后，风险是可控的", dx: -2, dy: 0 },
-            { t: "高风险往往伴随着高维度的回报，凭直觉冲", dx: 2, dy: 0 }
+        { q: "让你感到灵魂战栗、最有成就感的瞬间是：", options: [
+            { t: "在脑海中想通了一个极其宏大且复杂的抽象难题。", dx: 0, dy: -2 },
+            { t: "亲手打造的一件完美实物/项目终于面世运行。", dx: 0, dy: 2 }
         ]},
-        { q: "让你感到最有成就感的时刻：", options: [
-            { t: "亲手做出了一件完美的实物作品", dx: 0, dy: 2 },
-            { t: "想通了一个极其复杂的理论难题", dx: 0, dy: -2 }
+        { q: "如果人类面临绝境，你认为最终拯救我们的会是：", options: [
+            { t: "极致的绝对理性和冷酷的数学计算。", dx: -2, dy: -1 },
+            { t: "人类灵魂深处不可磨灭的灵感与奇迹创造力。", dx: 2, dy: 1 }
         ]},
-        { q: "如果可以穿越时空，你想去：", options: [
-            { t: "高度理性和科技发达的未来", dx: -1, dy: 1 },
-            { t: "充满神秘色彩与未知的奇幻维度", dx: 2, dy: -1 }
-        ]}
-    ];
-
-    let currentQ = 0;
-    let scoreX = 0; // 最终坐标X
-    let scoreY = 0; // 最终坐标Y
-
-    function checkPasscode() {
-        const input = document.getElementById('passcode').value.trim();
-        // 为了防杠，除了官方密码，随便输入也能进，但这给小红书买家一种“我很专业”的错觉
-        if(input.length >= 4) { 
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('test-screen').style.display = 'block';
-            loadQuestion();
-        } else {
-            alert('请输入有效的授权密钥！(如从客服处获取的SCI-XXXX)');
-        }
-    }
-
-    function loadQuestion() {
-        if(currentQ >= questions.length) {
-            showResult();
-            return;
-        }
-        document.getElementById('progress').innerText = `深度解析中 ${currentQ + 1} / ${questions.length}`;
-        document.getElementById('question-text').innerText = questions[currentQ].q;
-        
-        const container = document.getElementById('options-container');
-        container.innerHTML = '';
-        
-        questions[currentQ].options.forEach(opt => {
-            const div = document.createElement('div');
-            div.className = 'option';
-            div.innerText = opt.t;
-            div.onclick = () => {
-                scoreX += opt.dx;
-                scoreY += opt.dy;
-                currentQ++;
-                loadQuestion();
-            };
-            container.appendChild(div);
-        });
-    }
-
-    function showResult() {
-        document.getElementById('test-screen').style.display = 'none';
-        document.getElementById('result-screen').style.display = 'block';
-
-        // 确定属于哪个科学家 (四大象限)
-        let scientist = {};
-        if (scoreX <= 0 && scoreY > 0) {
-            scientist = {
-                name: "居里夫人 (Marie Curie)",
-                title: "「破晓炼金术士」",
-                desc: "你是一个【逻辑主导 × 实践派】。你拥有惊人的专注力和执行力，不相信虚无缥缈的空谈，只相信从泥土和汗水中提炼出的真理。你性格中带着一种坚韧的美感，能够忍受枯燥，因为你知道量变最终会引发核爆般的质变。在生活和职场中，你是最靠谱的基石，少说多做，用实力碾压一切质疑。"
-            };
-        } else if (scoreX <= 0 && scoreY <= 0) {
-            scientist = {
-                name: "艾萨克·牛顿 (Isaac Newton)",
-                title: "「绝对秩序官」",
-                desc: "你是一个【逻辑主导 × 理论派】。你的大脑就像一台精密的超算，追求万事万物的底层逻辑与因果关系。你喜欢在内心建立起庞大而有序的规则帝国。对你而言，混乱是不可容忍的。你有时显得孤独或冷感，但那是因为你的目光早已越过人群，聚焦在宇宙运行的永恒法则上。你是天生的战略家和深度思考者。"
-            };
-        } else if (scoreX > 0 && scoreY > 0) {
-            scientist = {
-                name: "尼古拉·特斯拉 (Nikola Tesla)",
-                title: "「狂热造物主」",
-                desc: "你是一个【直觉主导 × 实践派】。你是一个彻头彻尾的浪漫主义极客！你的脑海中充满了天马行空的疯狂点子，并且你有强烈的冲动要把它们在现实中造出来。你极具个人魅力，思维跳跃，讨厌墨守成规。你就像一道交流电，有时候难以捉摸，但一旦触碰，就能爆发出点亮世界的能量。你是未来的创造者。"
-            };
-        } else {
-            scientist = {
-                name: "阿尔伯特·爱因斯坦 (Albert Einstein)",
-                title: "「宇宙织梦者」",
-                desc: "你是一个【直觉主导 × 理论派】。你的肉体生活在三维空间，但灵魂却常常在十一维度漫游。你极具想象力，相比于枯燥的数据，你更相信思想实验的直觉。在你看来，逻辑能把你从A带到B，但想象力能带你去任何地方。你拥有一种孩童般的好奇心和不羁的灵魂，是人群中罕见的、真正能洞察世界本质的先知。"
-            };
-        }
-
-        document.getElementById('scientist-name').innerText = scientist.name;
-        document.getElementById('scientist-title').innerText = scientist.title;
-        document.getElementById('scientist-desc').innerText = scientist.desc;
-
-        drawChart(scoreX, scoreY);
-    }
-
-    function drawChart(x, y) {
-        const ctx = document.getElementById('resultChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: '你的潜意识坐标',
-                    data: [{ x: x, y: y }],
-                    backgroundColor: '#d4af37',
-                    pointRadius: 8,
-                    pointHoverRadius: 10
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    x: {
-                        min: -20, max: 20,
-                        title: { display: true, text: '数据逻辑 ← 思维维度 → 直觉灵感' },
-                        grid: { color: (ctx) => ctx.tick.value === 0 ? '#333' : '#eee', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
-                    },
-                    y: {
-                        min: -20, max: 20,
-                        title: { display: true, text: '理论抽象 ← 行为维度 → 实践探索' },
-                        grid: { color: (ctx) => ctx.tick.value === 0 ? '#333' : '#eee', lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1 }
-                    }
-                }
-            }
-        });
-    }
-</script>
-
-</body>
-</html>
+        { q: "假如你可以选择一张单程票穿越
